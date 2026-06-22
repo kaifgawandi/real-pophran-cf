@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Real Pophran C.F. | Elite Interface</title>
+    
+    <!-- Importing Dynamic Sports Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* NEW PROFESSIONAL COLOR PALETTE */
+            --bg-navy: #1e293b;       /* Deep Navy Gray */
+            --panel-navy: #334155;    /* Lighter Navy for cards/panels */
+            --coral-red: #ff5a5f;     /* Energetic Coral Red */
+            --coral-hover: #ff7a7e;   /* Lighter Coral for buttons */
+            --egg-yellow: #fcd34d;    /* Warm Egg Yellow / Gold accents */
+            --text-light: #f8fafc;    /* Crisp White */
+            --text-muted: #cbd5e1;    /* Soft Gray for secondary text */
+        }
+        
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background-color: var(--bg-navy); 
+            color: var(--text-light); 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+/* Dynamic Fonts & Animations - PREMIUM UPGRADE */
+        .dynamic-font { font-family: 'Orbitron', sans-serif; }
+        
+        .main-title {
+            text-align: center;
+            font-size: 2.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            
+            /* Premium Coral-to-Yellow Gradient */
+            background: linear-gradient(90deg, var(--coral-red), var(--egg-yellow), var(--coral-red));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* Crisp shadow instead of muddy blur */
+            filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.6));
+            
+            /* Moving shine animation */
+            animation: textShine 4s linear infinite;
+        }
+
+        @keyframes textShine {
+            to { background-position: 200% center; }
+        }
+
+        /* Subtle breathing effect for logos and titles */
+        .pulse-text {
+            display: inline-block;
+            animation: breathe 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes breathe {
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
+        }
+
+        .motivational-quote {
+            text-align: center;
+            color: var(--egg-yellow);
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        #auth-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .auth-box { background-color: var(--panel-navy); padding: 40px; border-radius: 8px; border: 1px solid var(--coral-red); box-shadow: 0 0 20px rgba(255, 90, 95, 0.15); width: 100%; max-width: 350px; text-align: center; }
+        .auth-box h2 { color: var(--coral-red); margin-bottom: 20px; }
+
+        nav { background-color: var(--panel-navy); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--coral-red); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); flex-wrap: wrap; }
+        .logo { color: var(--text-light); font-size: 26px; letter-spacing: 2px; }
+        .logo span { color: var(--egg-yellow); }
+        .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        .nav-btn { background: transparent; color: var(--text-light); border: 1px solid var(--coral-red); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Rajdhani', sans-serif; font-size: 1rem; transition: 0.3s; }
+        .nav-btn:hover, .nav-btn.active { background-color: var(--coral-red); color: var(--text-light); box-shadow: 0 0 10px rgba(255, 90, 95, 0.4); }
+        .manager-btn { border-color: var(--egg-yellow); color: var(--egg-yellow); }
+        .manager-btn:hover, .manager-btn.active { background-color: var(--egg-yellow); color: var(--bg-navy); }
+
+        .container { max-width: 900px; margin: 20px auto; padding: 15px; }
+        .page-section { display: none; animation: fadeIn 0.4s ease; }
+        .page-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1, h2 { color: var(--coral-red); border-bottom: 1px solid #475569; padding-bottom: 10px; font-family: 'Orbitron', sans-serif; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .stat-card { background-color: var(--panel-navy); border-left: 4px solid var(--coral-red); border-radius: 8px; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .stat-card h3 { margin: 0; color: var(--text-muted); font-size: 16px; text-transform: uppercase; }
+        .stat-card p { margin: 10px 0 0; font-size: 32px; font-weight: bold; color: var(--text-light); }
+        .stat-card p span { color: var(--egg-yellow); }
+
+        /* Mobile Responsive Tables */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid #475569; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        table { width: 100%; border-collapse: collapse; background-color: var(--panel-navy); min-width: 500px; }
+        th, td { padding: 14px 15px; text-align: center; border-bottom: 1px solid #475569; white-space: nowrap; }
+        th { background-color: var(--coral-red); color: var(--text-light); text-transform: uppercase; font-weight: bold; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+        tr:hover { background-color: #1e293b; }
+
+        .form-container { background-color: var(--panel-navy); padding: 25px; border-radius: 8px; border: 1px solid #475569; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        label { display: block; margin-top: 15px; color: var(--text-muted); font-weight: bold; font-size: 1.1rem; }
+        select, input { width: 100%; padding: 12px; margin-top: 5px; background-color: var(--bg-navy); color: var(--text-light); border: 1px solid #475569; border-radius: 4px; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; }
+        select:focus, input:focus { outline: 1px solid var(--coral-red); border-color: var(--coral-red); }
+        
+        .submit-btn { width: 100%; background-color: var(--coral-red); color: var(--text-light); padding: 15px; margin-top: 25px; border: none; border-radius: 4px; font-size: 1.2rem; font-weight: bold; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .submit-btn:hover { background-color: var(--coral-hover); box-shadow: 0 0 15px rgba(255, 90, 95, 0.4); }
+        .toggle-link { margin-top: 15px; display: block; color: var(--egg-yellow); font-size: 14px; cursor: pointer; text-decoration: underline; font-weight: bold; }
+        
+        .manager-only { display: none; }
+
+        /* Media Queries for Mobile Fit */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; text-align: center; padding: 10px; }
+            .logo { margin-bottom: 15px; }
+            .nav-links { justify-content: center; width: 100%; }
+            .nav-btn { flex: 1 1 calc(50% - 10px); text-align: center; font-size: 0.9rem; padding: 10px 5px; }
+            .main-title { font-size: 1.8rem; }
+            .motivational-quote { font-size: 0.9rem; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUTHENTICATION SYSTEM -->
+    <section id="auth-section">
+        <div class="auth-box">
+            <h2 id="auth-title" class="dynamic-font pulse-text">PLAYER LOGIN</h2>
+            <form onsubmit="handleAuth(event)">
+                <input type="text" id="auth-name" placeholder="Player Name" required>
+                <input type="password" id="auth-pass" placeholder="Password" required>
+                <button type="submit" class="submit-btn" id="auth-btn">ENTER ARENA</button>
+            </form>
+            <span class="toggle-link" onclick="toggleAuthMode()" id="auth-toggle">New Player? Register Here</span>
+        </div>
+    </section>
+
+    <!-- MAIN APPLICATION -->
+    <div id="main-app" style="display: none;">
+        <nav>
+            <div class="logo dynamic-font pulse-text">RPCF <span>⚡</span></div>
+            <div class="nav-links">
+                <button class="nav-btn player-only active" onclick="switchPage('dashboard', this)">My Stats</button>
+                <button class="nav-btn" onclick="switchPage('rankings', this)">Players Ranking</button>
+                <button class="nav-btn player-only" onclick="switchPage('update-stats', this)">Log Match-Day</button>
+                <button class="nav-btn manager-only manager-btn" onclick="switchPage('manager-panel', this)">MANAGER PORTAL</button>
+                <button class="nav-btn" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- PAGE 1: PERSONAL DASHBOARD -->
+            <section id="dashboard" class="page-section active player-only-section">
+                <h1>Player Dashboard</h1>
+                <p>Welcome, <strong id="welcome-name" style="color:var(--egg-yellow); font-size: 1.2rem;">Player</strong>.</p>
+                <div class="stats-grid">
+                    <div class="stat-card"><h3>Match-Days</h3><p id="dash-matches">0</p></div>
+                    <div class="stat-card"><h3>Goals</h3><p id="dash-goals">0</p></div>
+                    <div class="stat-card"><h3>Assists</h3><p id="dash-assists">0</p></div>
+                    <div class="stat-card"><h3>Avg Rating</h3><p><span id="dash-rating">0.0</span></p></div>
+                </div>
+            </section>
+
+            <!-- PAGE 2: LIVE RANKINGS -->
+            <section id="rankings" class="page-section">
+                <div class="main-title pulse-text dynamic-font">REAL POPHRAN C.F.</div>
+                <div class="motivational-quote" id="quote-box">Loading inspiration...</div>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>Rank</th><th>Player</th><th>Match-Days</th><th>Goals</th><th>Assists</th><th>Total Pts</th></tr></thead>
+                        <tbody id="rankings-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PAGE 3: SUBMIT STATS -->
+            <section id="update-stats" class="page-section player-only-section">
+                <h1>Log Match-Day</h1>
+                <div class="form-container">
+                    <form onsubmit="submitStats(event)">
+                        <label>Match Format</label>
+                        <select id="match_type" required>
+                            <option value="" disabled selected>Select Match Type...</option>
+                            <option value="Practice">Practice Session</option>
+                            <option value="League">R.P.C.F League</option>
+                            <option value="Main">Main Match</option>
+                        </select>
+                        <label>Goals Scored (Today)</label><input type="number" id="goals" min="0" value="0" required>
+                        <label>Assists Provided (Today)</label><input type="number" id="assists" min="0" value="0" required>
+                        <button type="submit" class="submit-btn">Send for Manager Rating</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- PAGE 4: MANAGER PORTAL -->
+            <section id="manager-panel" class="page-section manager-only-section">
+                <h1 style="color: var(--egg-yellow); border-bottom-color: var(--egg-yellow);">Manager Control Panel</h1>
+                <p style="color: var(--text-muted);">Review player Match-Day submissions and assign official ratings.</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead style="background-color: var(--egg-yellow);">
+                            <tr>
+                                <th style="background-color: var(--egg-yellow); color: var(--bg-navy);">Player</th>
+                                <th style="background-color: var(--egg-yellow); color: var(--bg-navy);">Format</th>
+                                <th style="background-color: var(--egg-yellow); color: var(--bg-navy);">Goals</th>
+                                <th style="background-color: var(--egg-yellow); color: var(--bg-navy);">Assists</th>
+                                <th style="background-color: var(--egg-yellow); color: var(--bg-navy);">Rating / 10</th>
+                                <th style="background-color: var(--egg-yellow); color: var(--bg-navy);">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manager-body">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const quotes = [
+            "Show more effort to get more better. ⚡",
+            "Talent wins matches, but teamwork wins championships.",
+            "Push your limits on the pitch today.",
+            "Every Match-Day is an opportunity to prove yourself.",
+            "Sweat in practice, shine in the main match.",
+            "Leave everything on the field."
+        ];
+
+        let isLoginMode = true;
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "PLAYER LOGIN" : "JOIN THE SQUAD";
+            document.getElementById('auth-btn').innerText = isLoginMode ? "ENTER ARENA" : "REGISTER PROFILE";
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            const name = document.getElementById('auth-name').value;
+            const password = document.getElementById('auth-pass').value;
+            const endpoint = isLoginMode ? '/api/login' : '/api/register';
+
+            const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, password }) });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                if (isLoginMode) {
+                    localStorage.setItem('rpcf_user_id', result.user_id);
+                    localStorage.setItem('rpcf_user_name', result.name);
+                    localStorage.setItem('rpcf_role', result.role);
+                    initializeApp();
+                } else {
+                    alert(result.message);
+                    toggleAuthMode(); 
+                }
+            } else { alert(result.message); }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.reload();
+        }
+
+        function setRandomQuote() {
+            const quoteBox = document.getElementById('quote-box');
+            if(quoteBox) {
+                const randomIndex = Math.floor(Math.random() * quotes.length);
+                quoteBox.innerText = `"${quotes[randomIndex]}"`;
+            }
+        }
+
+        function initializeApp() {
+            const role = localStorage.getItem('rpcf_role');
+            if (!role) return;
+
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            
+            setRandomQuote();
+
+            if (role === 'Manager') {
+                document.querySelectorAll('.player-only').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.player-only-section').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.manager-only').forEach(el => el.style.display = 'inline-block');
+                switchPage('manager-panel', document.querySelector('.manager-only'));
+                loadPendingStats();
+            } else {
+                document.getElementById('welcome-name').innerText = localStorage.getItem('rpcf_user_name');
+                loadDashboardData(localStorage.getItem('rpcf_user_id'));
+            }
+            loadRankingsData();
+        }
+
+        async function loadDashboardData(userId) {
+            const res = await fetch(`/api/dashboard/${userId}`);
+            const data = await res.json();
+            document.getElementById('dash-matches').innerText = data.matches;
+            document.getElementById('dash-goals').innerText = data.goals;
+            document.getElementById('dash-assists').innerText = data.assists;
+            document.getElementById('dash-rating').innerText = data.avg_rating;
+        }
+
+        async function loadRankingsData() {
+            const res = await fetch('/api/rankings');
+            const rankings = await res.json();
+            const tbody = document.getElementById('rankings-body');
+            tbody.innerHTML = ""; 
+
+            rankings.forEach((player, index) => {
+                const pts = player.overall_points ? player.overall_points.toFixed(1) : "0.0";
+                tbody.innerHTML += `<tr>
+                    <td style="font-family:'Orbitron',sans-serif; color: var(--egg-yellow); font-size: 1.2rem;">${index + 1}</td>
+                    <td style="font-weight:bold; font-size:1.1rem; color: var(--text-light);">${player.name}</td>
+                    <td style="color: var(--text-muted);">${player.total_matches}</td>
+                    <td style="color: var(--text-muted);">${player.total_goals || 0}</td>
+                    <td style="color: var(--text-muted);">${player.total_assists || 0}</td>
+                    <td style="color:var(--coral-red); font-weight:bold; font-size:1.1rem;">${pts}</td>
+                </tr>`;
+            });
+        }
+
+        async function loadPendingStats() {
+            const res = await fetch('/api/pending_stats');
+            const stats = await res.json();
+            const tbody = document.getElementById('manager-body');
+            tbody.innerHTML = "";
+            
+            if(stats.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='6' style='color: var(--text-muted);'>No pending Match-Days to review.</td></tr>";
+                return;
+            }
+
+            stats.forEach(s => {
+                tbody.innerHTML += `<tr>
+                    <td style="font-weight:bold;">${s.name}</td>
+                    <td style="color: var(--text-muted);">${s.match_type}</td>
+                    <td style="color: var(--text-muted);">${s.goals}</td>
+                    <td style="color: var(--text-muted);">${s.assists}</td>
+                    <td><input type="number" id="rating-${s.stat_id}" min="0" max="10" step="0.1" value="10.0" style="width: 70px; text-align: center; margin: auto;"></td>
+                    <td><button onclick="submitRating(${s.stat_id})" class="submit-btn" style="margin-top:0; padding: 8px; font-size: 0.9rem;">Approve</button></td>
+                </tr>`;
+            });
+        }
+
+        async function submitRating(statId) {
+            const ratingValue = parseFloat(document.getElementById(`rating-${statId}`).value);
+            const res = await fetch('/api/rate_player', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stat_id: statId, rating: ratingValue })
+            });
+            alert((await res.json()).message);
+            loadPendingStats();
+            loadRankingsData();
+        }
+
+        async function submitStats(event) {
+            event.preventDefault();
+            const data = { player_id: parseInt(localStorage.getItem('rpcf_user_id')), match_type: document.getElementById('match_type').value, goals: parseInt(document.getElementById('goals').value), assists: parseInt(document.getElementById('assists').value) };
+            const res = await fetch('/api/submit_stats', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            alert((await res.json()).message);
+            document.getElementById('goals').value = 0; document.getElementById('assists').value = 0;
+        }
+
+        function switchPage(pageId, btnElement) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            btnElement.classList.add('active');
+            
+            if(pageId === 'dashboard') loadDashboardData(localStorage.getItem('rpcf_user_id'));
+            if(pageId === 'rankings') { loadRankingsData(); setRandomQuote(); }
+            if(pageId === 'manager-panel') loadPendingStats();
+        }
+
+        window.onload = () => { if (localStorage.getItem('rpcf_user_id')) initializeApp(); };
+    </script>
+</body>
+</html>
