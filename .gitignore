@@ -1,0 +1,6 @@
+# Never upload these to GitHub
+rpcf_data.db
+.env
+__pycache__/
+*.pyc
+.DS_Store
