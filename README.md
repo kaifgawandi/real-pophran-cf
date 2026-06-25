@@ -10,19 +10,19 @@ A full-stack sports analytics web application built to manage, track, and visual
 
 | Player Analytics | Leaderboard |
 |---|---|
-| ![Player Analytics](screenshots/Player-analytics.png) | ![Leaderboard](screenshots/player-ranking.png) |
+| ![Player Analytics](Player-analytics.png) | ![Leaderboard](player-ranking.png) |
 
 | Player Identity Card | Performance History |
 |---|---|
-| ![Player Profile](screenshots/players-profile.png) | ![Match History](screenshots/performance-history.png) |
+| ![Player Profile](players-profile.png) | ![Match History](performance-history.png) |
 
 | Manager Control Panel | Club Team Center |
 |---|---|
-| ![Manager Portal](screenshots/manager-portal.png) | ![Team Center](screenshots/club-performance.png) |
+| ![Manager Portal](manager-portal.png) | ![Team Center](club-performance.png) |
 
 | AI Coach Matrix |
 |---|
-| ![Log Match](screenshots/log-match.png) |
+| ![Log Match](log-match.png) |
 
 ---
 
