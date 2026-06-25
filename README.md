@@ -1,50 +1,68 @@
-# ⚽ Real Pophran C.F. — Club Management System
+# ⚡ Real Pophran C.F. — Club Management System
 
-> A full-stack web application built to manage a **real** football club — player stats, match ratings, points leaderboard, and manager approval workflows. Built by the Captain himself.
+> *"Every Match-Day is an opportunity to prove yourself."*
 
-**Built by [Mohd Kaif Gawandi](https://github.com/kaifgawandi)** — Captain & Manager, REAL POPHRAN C.F.
-
----
-
-## 🎯 Why I Built This
-
-I manage REAL POPHRAN C.F. and organise the RPCF Sunday League. Tracking player stats, match performance, and squad rankings manually was getting messy. So I built a proper system — one that gives every player their own dashboard, lets me rate performances as Manager, and keeps a live leaderboard the whole squad can see.
-
-This is a **real tool used by a real team** — not a tutorial project.
+A full-stack sports analytics web application built to manage, track, and visualize player performance for my football club — **Real Pophran C.F.**
 
 ---
 
-## 🖥️ Features
+## 🖥️ Live Preview
 
-| Feature | Who Uses It |
+| Player Analytics | Leaderboard |
 |---|---|
-| Player registration & login | All Players |
-| Submit match stats (goals & assists) | Players |
-| Personal performance dashboard | Players |
-| Live squad rankings leaderboard | Everyone |
-| Pending stats approval queue | Manager (Kaif) only |
-| Manager rating system (0–10) | Manager (Kaif) only |
-| Points multiplier by match type | System auto-calculated |
+| ![Player Analytics](screenshots/Player-analytics.png) | ![Leaderboard](screenshots/player-ranking.png) |
 
-### 🏆 Points Multiplier System
-```
-Practice Match  →  Rating × 0.5
-League Match    →  Rating × 1.0
-Main Match      →  Rating × 2.0
-```
-A 9.0 rating in a Main Match = 18.0 points. Same rating in Practice = 4.5 points. Incentivises big-game performance.
+| Player Identity Card | Performance History |
+|---|---|
+| ![Player Profile](screenshots/players-profile.png) | ![Match History](screenshots/performance-history.png) |
+
+| Manager Control Panel | Club Team Center |
+|---|---|
+| ![Manager Portal](screenshots/manager-portal.png) | ![Team Center](screenshots/club-performance.png) |
+
+| AI Coach Matrix |
+|---|
+| ![Log Match](screenshots/log-match.png) |
 
 ---
 
-## 🛠️ Tech Stack
+## ⚙️ Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Backend | FastAPI (Python) |
-| Database | SQLite with relational schema |
-| Frontend | Vanilla HTML / CSS / JavaScript |
-| Auth | Role-based (Manager vs Player) |
-| API | 6 REST endpoints |
+| **Backend** | FastAPI (Python) |
+| **Database** | SQLite |
+| **Auth** | JWT Tokens + Passlib (pbkdf2_sha256) |
+| **Frontend** | Vanilla HTML / CSS / JavaScript |
+| **Charts** | Chart.js |
+| **AI Feature** | Claude API (AI Coach Matrix) |
+
+---
+
+## 🚀 Features
+
+### 👤 Player Features
+- Secure registration & JWT-based login
+- **Player Identity Card** — FIFA-style card with position, age, preferred foot, bio & avatar
+- **Player Analytics Dashboard** — Match-day stats with live Goal, Assist & Rating charts
+- **Performance History** — Full match timeline with dates, format & manager ratings
+- **Log Match Performance** — Submit stats and get instant AI coaching feedback
+- **Leaderboard** — Live rankings with Top Scorer, Top Assister, Best Rated & Most Improved badges
+
+### 🛡️ Manager Features
+- Dedicated Manager Control Panel
+- Review and approve pending player stat submissions
+- Assign official ratings (1–10) per match
+- Points multiplier system: `Practice 0.5×` · `League 1.0×` · `Main Match 2.0×`
+
+### 🏟️ Club Features
+- **Club Team Center** — Squad-wide goals, assists, avg rating & Club MVP
+- Real-time leaderboard with total points ranking
+
+### 🤖 AI Coach Matrix
+- After every match log, an AI coach analyses the player's performance
+- Gives tactical feedback and an expected manager rating prediction
+- Powered by the Claude API
 
 ---
 
@@ -52,121 +70,65 @@ A 9.0 rating in a Main Match = 18.0 points. Same rating in Practice = 4.5 points
 
 ```
 real-pophran-cf/
-├── main.py          → FastAPI backend (6 API endpoints)
-├── db_setup.py      → Database schema + seed data
-├── index.html       → Full frontend (auth, dashboard, rankings, manager panel)
-└── rpcf_data.db     → SQLite database (auto-generated on setup)
+├── main.py          # FastAPI backend — all API routes
+├── db_setup.py      # Database initialization & schema
+├── index.html       # Full frontend (SPA — vanilla JS)
+├── README.md
+└── screenshots/     # App preview images
 ```
 
 ---
 
-## 🚀 How to Run Locally
+## 🏃 How to Run Locally
 
+**1. Install dependencies**
 ```bash
-# 1. Install dependencies
-pip install fastapi uvicorn
+pip install fastapi uvicorn passlib python-jose
+```
 
-# 2. Set up the database
+**2. Initialize the database**
+```bash
 python db_setup.py
+```
 
-# 3. Start the server
+**3. Start the server**
+```bash
 uvicorn main:app --reload
-
-# 4. Open your browser
-# Go to → http://localhost:8000
 ```
 
-**Default Manager Login:**
+**4. Open in browser**
 ```
-Name:     Kaif
-Password: admin123
-Role:     Manager
+http://localhost:8000
 ```
+
+> Default Manager login — Username: `Kaif` | Password: set during db_setup
 
 ---
 
-## 🔌 API Endpoints
+## 🔐 Security
+- Passwords hashed using **pbkdf2_sha256** via Passlib
+- All protected routes use **JWT token verification**
+- Role-based access control — Players and Managers have separate permissions
+- Stats can only be submitted by authenticated Players
+- Ratings can only be approved by authenticated Managers
 
-| Method | Endpoint | Description |
+---
+
+## 📊 Points System
+
+| Match Format | Multiplier | Example (Rating 8.0) |
 |---|---|---|
-| POST | `/api/register` | Register new player |
-| POST | `/api/login` | Login (player or manager) |
-| POST | `/api/submit_stats` | Player submits match stats |
-| GET | `/api/dashboard/{player_id}` | Player performance dashboard |
-| GET | `/api/rankings` | Full squad leaderboard |
-| GET | `/api/pending_stats` | Manager: view unrated submissions |
-| POST | `/api/rate_player` | Manager: rate and approve stats |
+| Practice Session | ×0.5 | 4.0 pts |
+| R.P.C.F League | ×1.0 | 8.0 pts |
+| Main Match | ×2.0 | 16.0 pts |
 
 ---
 
-## 🗄️ Database Schema
+## 👨‍💻 Built By
 
-```
-Users
-├── user_id (PK, auto)
-├── name (UNIQUE)
-├── password
-└── role (Manager / Player)
-
-Stats
-├── stat_id (PK, auto)
-├── player_id (FK → Users)
-├── match_type (Practice / League / Main)
-├── goals
-├── assists
-├── manager_rating (0.0–10.0)
-├── total_points (auto-calculated)
-└── status (Pending → Rated)
-```
+**Kaif Gawandi**
+[GitHub](https://github.com/kaifgawandi) · [LinkedIn](https://www.linkedin.com/in/kaif-gawandi)
 
 ---
 
-## 🎨 UI Highlights
-
-- Deep Navy + Coral Red + Gold colour scheme
-- Orbitron & Rajdhani fonts — premium sports aesthetic
-- Animated gradient title with moving shine effect
-- Mobile-responsive layout with touch-friendly controls
-- Role-based navigation (Manager panel hidden from players)
-- Smooth page transitions with fade animations
-
----
-## Screenshots
-
-### Login
-
-![Login](ss-login.png)
-
-### Player Dashboard
-
-![Dashboard](ss-dashboard.png)
-
-### Players Ranking
-
-![Rankings](ss-rankings.png)
-
-### Log Match-Day
-
-![Log Match](ss-logmatch.png)
-
-### Manager Control Panel
-
-![Manager](ss-manager.png)
----
-
-## 🔮 Planned Features
-
-- [ ] Match date tracking for time-based stats filtering
-- [ ] Player profile photo uploads
-- [ ] Achievement badges (Top Scorer, Most Assists, etc.)
-- [ ] Team performance analytics charts
-- [ ] PWA support — installable on mobile devices
-- [ ] Password hashing for production security
-
----
-
-## 📫 Connect
-
-- 🌐 Portfolio: [kaifgawandi.github.io](https://kaifgawandi.github.io)
-- 💼 LinkedIn: [linkedin.com/in/kaif-gawandi](https://www.linkedin.com/in/kaif-gawandi/)
-- 🐙 GitHub: [github.com/kaifgawandi](https://github.com/kaifgawandi)
+> Built with passion for Real Pophran C.F. ⚡
