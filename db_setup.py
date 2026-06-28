@@ -1,20 +1,24 @@
-import sqlite3
+import psycopg2
 import os
 from passlib.context import CryptContext
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, 'rpcf_data.db')
+# Pulls the secure URL from Render's environment variables
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 def setup_database():
-    conn = sqlite3.connect(DB_PATH)
+    if not DATABASE_URL:
+        print("CRITICAL ERROR: DATABASE_URL is not set!")
+        return
+
+    conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
 
-    # Added profile_pic column with a default vector football avatar silhouette
+    # Create the Users table matching your schema
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Users (
-        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id SERIAL PRIMARY KEY,
         name TEXT UNIQUE,
         password TEXT,
         role TEXT,
@@ -26,9 +30,10 @@ def setup_database():
     )
     ''')
 
+    # Create the Match Stats table matching your schema
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Stats (
-        stat_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        stat_id SERIAL PRIMARY KEY,
         player_id INTEGER,
         match_type TEXT, 
         goals INTEGER,
@@ -36,21 +41,26 @@ def setup_database():
         manager_rating REAL DEFAULT 0.0,
         total_points REAL DEFAULT 0.0,
         status TEXT DEFAULT 'Pending', 
-        date_logged TEXT DEFAULT CURRENT_DATE,
+        date_logged DATE DEFAULT CURRENT_DATE,
         FOREIGN KEY(player_id) REFERENCES Users(user_id)
     )
     ''')
 
+    # Generate a secure hash for the manager account
     hashed_admin_password = pwd_context.hash("admin123")
 
     try:
-        cursor.execute("INSERT INTO Users (name, password, role) VALUES (?, ?, 'Manager')", ('Kaif', hashed_admin_password))
-    except sqlite3.IntegrityError:
-        pass 
+        cursor.execute('''
+            INSERT INTO Users (name, password, role) 
+            VALUES (%s, %s, 'Manager') 
+            ON CONFLICT (name) DO NOTHING
+        ''', ('Kaif', hashed_admin_password))
+    except Exception as e:
+        print("Admin user setup error:", e)
 
     conn.commit()
     conn.close()
-    print("Database Initialized! Profile configurations repaired.")
+    print("Cloud PostgreSQL Database Initialized Successfully!")
 
 if __name__ == "__main__":
     setup_database()
