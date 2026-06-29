@@ -12,22 +12,23 @@ from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
 async def keep_alive_ping():
-    """Pings DB every 4 days to prevent Supabase free tier from pausing."""
+    # Wait 60s after startup so app boots fully before hitting DB
+    await asyncio.sleep(60)
     while True:
         try:
             conn   = get_db()
             cursor = conn.cursor()
             cursor.execute("SELECT 1")
             cursor.close(); conn.close()
-            print(f"[Keep-Alive] DB pinged at {datetime.utcnow().strftime('%Y-%m-%d %H:%M')} UTC — Supabase stays awake ✅")
+            print(f"[Keep-Alive] DB pinged — Supabase stays awake")
         except Exception as e:
             print(f"[Keep-Alive] Ping failed: {e}")
-        await asyncio.sleep(4 * 24 * 60 * 60)  # 4 days
+        # Sleep 4 days before next ping
+        await asyncio.sleep(4 * 24 * 60 * 60)
 
 @asynccontextmanager
 async def lifespan(app):
     asyncio.create_task(keep_alive_ping())
-    print("[Keep-Alive] Supabase keep-alive scheduler started 🔥")
     yield
 
 app = FastAPI(title="Real Pophran C.F. API", lifespan=lifespan)
