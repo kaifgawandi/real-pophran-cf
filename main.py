@@ -498,7 +498,7 @@ async def mark_notification_read(data: NotificationRead):
     conn    = get_db()
     cursor  = conn.cursor()
     cursor.execute(
-        "UPDATE notifications SET is_read=1 WHERE notif_id=%s AND user_id=%s",
+        "UPDATE notifications SET is_read=TRUE WHERE notif_id=%s AND user_id=%s",
         (data.notif_id, payload.get("id"))
     )
     conn.commit()
@@ -511,7 +511,7 @@ async def mark_all_read(data: dict):
     conn    = get_db()
     cursor  = conn.cursor()
     cursor.execute(
-        "UPDATE notifications SET is_read=1 WHERE user_id=%s",
+        "UPDATE notifications SET is_read=TRUE WHERE user_id=%s",
         (payload.get("id"),)
     )
     conn.commit()
