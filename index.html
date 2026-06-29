@@ -1197,6 +1197,170 @@
             .award-icon { font-size: 1.4rem; }
         }
 
+        /* ── NOTIFICATION BELL ── */
+        .notif-bell {
+            position: relative;
+            cursor: pointer;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s, color 0.2s;
+            flex-shrink: 0;
+        }
+        .notif-bell:hover { border-color: var(--gold); color: var(--gold); }
+
+        .notif-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--red);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            display: none;
+        }
+
+        .notif-dropdown {
+            display: none;
+            position: fixed;
+            top: 64px;
+            right: 16px;
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            z-index: 300;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+        }
+        .notif-dropdown.open { display: block; }
+
+        .notif-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notif-header span {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.78rem;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+        .notif-mark-all {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted);
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: color 0.2s;
+        }
+        .notif-mark-all:hover { color: var(--gold); }
+
+        .notif-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(26,45,69,0.5);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item:hover { background: rgba(255,255,255,0.03); }
+        .notif-item.unread { border-left: 3px solid var(--gold); }
+        .notif-item .notif-time {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+        .notif-empty {
+            padding: 24px;
+            text-align: center;
+            color: var(--muted);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        /* ── MANAGER SUMMARY CARDS ── */
+        .manager-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+        .summary-card-val {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .summary-card-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .summary-card-sub {
+            font-size: 0.78rem;
+            color: var(--text);
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        /* ── REJECT BTN ── */
+        .reject-btn {
+            background: transparent;
+            border: 1px solid var(--red);
+            color: var(--red);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-left: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .reject-btn:hover { background: var(--red); color: #fff; }
+
         /* ── MANAGER ONLY ── */
         .manager-only { display: none; }
         .player-only { display: inline-block; }
@@ -1230,6 +1394,11 @@
     <nav>
         <div class="logo">RPCF <span class="logo-bolt">⚡</span></div>
         <button class="nav-hamburger" onclick="toggleMobileNav()" id="hamburger-btn">☰</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+        <button class="notif-bell" onclick="toggleNotifications()" id="notif-bell-btn" title="Notifications">
+            🔔
+            <span class="notif-badge" id="notif-badge">0</span>
+        </button>
         <div class="nav-links" id="nav-links-container">
             <button class="nav-btn player-only active" onclick="switchPage('dashboard', this)">Analytics</button>
             <button class="nav-btn player-only" onclick="switchPage('profile-page', this)">Profile</button>
@@ -1241,7 +1410,17 @@
             <button class="nav-btn manager-only manager-nav" onclick="switchPage('squad-roster', this)">Squad</button>
             <button class="nav-btn nav-logout" onclick="logout()">Logout</button>
         </div>
+        </div>
     </nav>
+
+    <!-- NOTIFICATION DROPDOWN -->
+    <div class="notif-dropdown" id="notif-dropdown">
+        <div class="notif-header">
+            <span>🔔 NOTIFICATIONS</span>
+            <button class="notif-mark-all" onclick="markAllRead()">Mark all read</button>
+        </div>
+        <div id="notif-list"><div class="notif-empty">No notifications yet.</div></div>
+    </div>
 
     <div class="container">
 
@@ -1306,6 +1485,10 @@
                             <div class="card-stat-value" style="color:var(--gold)" id="card-foot">R</div>
                             <div class="card-stat-title">FOOT</div>
                         </div>
+                        <div>
+                            <div class="card-stat-value" style="color:var(--red)" id="card-jersey">#--</div>
+                            <div class="card-stat-title">JERSEY</div>
+                        </div>
                     </div>
                     <div class="card-bio" id="card-bio">"Ready to make history on the pitch."</div>
                 </div>
@@ -1316,6 +1499,9 @@
 
                     <label class="field-label">Profile Image</label>
                     <input type="file" id="profile-pic-input" accept="image/png,image/jpeg,image/webp">
+
+                    <label class="field-label">Jersey Number</label>
+                    <input type="number" id="profile-jersey" min="1" max="99" value="0" placeholder="e.g. 10">
 
                     <label class="field-label">Primary Position</label>
                     <select id="profile-position">
@@ -1388,6 +1574,7 @@
                             <tr>
                                 <th class="red">Rank</th>
                                 <th>Player</th>
+                                <th style="display:none;" class="hide-mobile">Pos</th>
                                 <th>Match-Days</th>
                                 <th>Goals</th>
                                 <th>Assists</th>
@@ -1512,6 +1699,31 @@
                 <div class="page-subtext">Review submissions · Assign official ratings</div>
                 <div class="divider gold"></div>
             </div>
+
+            <!-- Manager Summary Cards -->
+            <div class="manager-summary-grid">
+                <div class="summary-card">
+                    <div class="summary-card-val" id="mgr-pending">0</div>
+                    <div class="summary-card-label">Pending Reviews</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-card-val" id="mgr-today">0</div>
+                    <div class="summary-card-label">Today's Submissions</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-card-val" id="mgr-avg">0.0</div>
+                    <div class="summary-card-label">Team Avg Rating</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-card-val" style="font-size:1rem; padding-top:6px;" id="mgr-top">—</div>
+                    <div class="summary-card-label">Top Performer</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-card-val" style="font-size:1rem; padding-top:6px;" id="mgr-low">—</div>
+                    <div class="summary-card-label">Needs Improvement</div>
+                </div>
+            </div>
+
             <div class="table-wrap">
                 <div class="table-responsive">
                     <table>
@@ -1657,15 +1869,77 @@
         if (el) el.textContent = `${exp.toFixed(1)} / 10`;
     }
 
-    // ── TOAST ──────────────────────────────────────────────────────────
-    function showToast(msg, type = 'success') {
+    // ── NOTIFICATIONS ──────────────────────────────────────────────────
+    function toggleNotifications() {
+        const dd = document.getElementById('notif-dropdown');
+        dd.classList.toggle('open');
+        if (dd.classList.contains('open')) loadNotifications();
+    }
+
+    // Close notifications on outside click
+    document.addEventListener('click', (e) => {
+        const bell = document.getElementById('notif-bell-btn');
+        const dd   = document.getElementById('notif-dropdown');
+        if (bell && dd && !bell.contains(e.target) && !dd.contains(e.target)) {
+            dd.classList.remove('open');
+        }
+    });
+
+    async function loadNotifications() {
+        const userId = localStorage.getItem('rpcf_user_id');
+        if (!userId) return;
+        const res = await fetch(`/api/notifications/${userId}`);
+        if (!res.ok) return;
+        const notifs = await res.json();
+        const list   = document.getElementById('notif-list');
+        const badge  = document.getElementById('notif-badge');
+        const unread = notifs.filter(n => !n.is_read).length;
+
+        if (unread > 0) {
+            badge.style.display = 'flex';
+            badge.textContent   = unread > 9 ? '9+' : unread;
+        } else {
+            badge.style.display = 'none';
+        }
+
+        if (!notifs.length) {
+            list.innerHTML = `<div class="notif-empty">No notifications yet.</div>`;
+            return;
+        }
+
+        list.innerHTML = notifs.map(n => `
+            <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="markRead(${n.notif_id})">
+                <div>${n.message}</div>
+                <div class="notif-time">${n.created_at || ''}</div>
+            </div>
+        `).join('');
+    }
+
+    async function markRead(notifId) {
+        const token = localStorage.getItem('rpcf_token');
+        await fetch('/api/mark_read', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, notif_id: notifId }) });
+        loadNotifications();
+    }
+
+    async function markAllRead() {
+        const token = localStorage.getItem('rpcf_token');
+        await fetch('/api/mark_all_read', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) });
+        loadNotifications();
+        showToast('All notifications marked as read', 'info');
+    }
+
+    // Poll notifications every 30 seconds
+    setInterval(() => {
+        if (localStorage.getItem('rpcf_user_id')) loadNotifications();
+    }, 30000);
         const t = document.getElementById('toast');
         t.textContent = msg;
         t.className = `show ${type}`;
         setTimeout(() => { t.className = ''; }, 3500);
     }
 
-    // ── AUTH ───────────────────────────────────────────────────────────
+    // ── TOAST ──────────────────────────────────────────────────────────
+    function showToast(msg, type = 'success') {
     function toggleAuthMode() {
         isLoginMode = !isLoginMode;
         document.getElementById('auth-title').textContent   = isLoginMode ? 'PLAYER LOGIN' : 'JOIN THE SQUAD';
@@ -1714,6 +1988,7 @@
             document.querySelectorAll('.manager-only').forEach(el => el.style.display = 'inline-block');
             switchPage('manager-panel', document.querySelector('.manager-nav'));
             loadPendingStats();
+            loadManagerSummary();
         } else {
             document.getElementById('welcome-name').textContent = localStorage.getItem('rpcf_name');
             loadDashboardSummary();
@@ -1721,6 +1996,7 @@
             loadProfile();
             loadMatchHistory();
             setupImageUploader();
+            loadNotifications();
         }
         loadRankingsAndAwards();
         loadGlobalTeamCenter();
@@ -1738,7 +2014,7 @@
         if (pageId === 'history-page') loadMatchHistory();
         if (pageId === 'rankings')     loadRankingsAndAwards();
         if (pageId === 'team-center')  loadGlobalTeamCenter();
-        if (pageId === 'manager-panel') loadPendingStats();
+        if (pageId === 'manager-panel') { loadPendingStats(); loadManagerSummary(); }
         if (pageId === 'squad-roster')  loadSquadRoster();
     }
 
@@ -1765,11 +2041,13 @@
         document.getElementById('card-position').textContent = data.position;
         document.getElementById('card-age').textContent      = data.age || '--';
         document.getElementById('card-foot').textContent     = data.preferred_foot ? data.preferred_foot.charAt(0) : '-';
+        document.getElementById('card-jersey').textContent   = data.jersey_number ? `#${data.jersey_number}` : '#--';
         document.getElementById('card-bio').textContent      = `"${data.bio}"`;
         document.getElementById('profile-position').value    = data.position !== 'Unassigned' ? data.position : 'ST';
         document.getElementById('profile-age').value         = data.age || 18;
         document.getElementById('profile-foot').value        = data.preferred_foot || 'Right';
         document.getElementById('profile-bio').value         = data.bio !== 'Ready to make history on the pitch.' ? data.bio : '';
+        document.getElementById('profile-jersey').value      = data.jersey_number || 0;
     }
 
     async function saveProfile() {
@@ -1779,6 +2057,7 @@
             token,
             position:       document.getElementById('profile-position').value,
             age:            parseInt(document.getElementById('profile-age').value),
+            jersey_number:  parseInt(document.getElementById('profile-jersey').value) || 0,
             preferred_foot: document.getElementById('profile-foot').value,
             bio:            document.getElementById('profile-bio').value || 'Ready to make history on the pitch.',
             profile_pic:    currentPic
@@ -1786,7 +2065,7 @@
         const res    = await fetch('/api/update_profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
         const result = await res.json();
         if (res.ok) { showToast(result.message, 'success'); loadProfile(); }
-        else         showToast('Error: ' + result.detail, 'error');
+        else         showToast('Error: ' + (result.detail || result.message), 'error');
     }
 
     // ── DASHBOARD ──────────────────────────────────────────────────────
@@ -1889,15 +2168,13 @@
                     <div style="display:flex; align-items:center; gap:10px;">
                         <img src="${pic}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'"
                             style="width:32px; height:32px; border-radius:50%; border:1.5px solid var(--gold); object-fit:cover; flex-shrink:0;">
-                        <div style="text-align:left;">
-                            <div style="font-family:'Orbitron',sans-serif; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">${p.name}</div>
-                            ${p.position && p.position !== 'Unassigned' ? `<div style="font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--gold); letter-spacing:1px; margin-top:2px;">${p.position}</div>` : ''}
-                        </div>
+                        <span style="font-family:'Orbitron',sans-serif; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">${p.name}</span>
                     </div>
                 </td>
-                <td style="font-family:'Orbitron',sans-serif; font-weight:700;">${p.total_matches || 0}</td>
+                <td style="font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--muted);">${p.position || '—'}</td>
+                <td>${p.total_matches || 0}</td>
                 <td style="color:var(--red); font-weight:700;">${p.total_goals || 0}</td>
-                <td style="font-weight:700;">${p.total_assists || 0}</td>
+                <td>${p.total_assists || 0}</td>
                 <td style="color:var(--gold); font-family:'Orbitron',sans-serif; font-weight:700;">${pts}</td>
             </tr>`;
 
@@ -1910,7 +2187,7 @@
         });
 
         if (!rankings.length) {
-            tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted); padding:24px; font-family:'Share Tech Mono',monospace; text-align:center;">No squad data yet.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted); padding:24px; font-family:'Share Tech Mono',monospace; text-align:center;">No squad data yet.</td></tr>`;
         }
 
         document.getElementById('award-scorer').textContent     = topScorer.name;
@@ -1982,6 +2259,20 @@
         textEl.textContent = `"${advice}"`;
     }
 
+    // ── MANAGER SUMMARY ────────────────────────────────────────────────
+    async function loadManagerSummary() {
+        try {
+            const res  = await fetch('/api/manager_summary');
+            if (!res.ok) return;
+            const data = await res.json();
+            document.getElementById('mgr-pending').textContent = data.pending || 0;
+            document.getElementById('mgr-today').textContent   = data.today_matches || 0;
+            document.getElementById('mgr-avg').textContent     = data.team_avg || '0.0';
+            document.getElementById('mgr-top').textContent     = data.top_performer || '—';
+            document.getElementById('mgr-low').textContent     = data.low_performer || '—';
+        } catch(e) { console.log('Summary load error:', e); }
+    }
+
     // ── MANAGER: PENDING STATS ─────────────────────────────────────────
     async function loadPendingStats() {
         const res   = await fetch('/api/pending_stats');
@@ -1990,21 +2281,34 @@
         tbody.innerHTML = '';
 
         if (!stats.length) {
-            tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted); padding:24px;">No pending submissions to review.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted); padding:24px;">No pending submissions to review. ✅</td></tr>`;
             return;
         }
 
         stats.forEach(s => {
             tbody.innerHTML += `<tr>
-                <td style="font-family:'Orbitron',sans-serif; color:var(--gold); font-weight:700; font-size:0.85rem; text-transform:uppercase;">${s.name}</td>
+                <td style="font-family:'Orbitron',sans-serif; color:var(--gold); font-weight:700; font-size:0.85rem; text-transform:uppercase;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <img src="${s.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png'}"
+                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'"
+                            style="width:28px; height:28px; border-radius:50%; border:1px solid var(--gold); object-fit:cover; flex-shrink:0;">
+                        ${s.name}
+                    </div>
+                </td>
                 <td><span class="match-pill ${s.match_type}">${s.match_type}</span></td>
                 <td style="font-weight:700;">${s.goals}</td>
                 <td>${s.assists}</td>
                 <td style="font-family:'Share Tech Mono',monospace; color:var(--muted); font-size:0.8rem;">${s.date_logged || '—'}</td>
                 <td><input class="rating-input" type="number" id="rating-${s.stat_id}" min="0" max="10" step="0.1" value="8.0"></td>
-                <td><button onclick="submitRating(${s.stat_id})" class="submit-btn gold-btn" style="margin-top:0; padding:8px 16px; width:auto; font-size:0.75rem;">Approve</button></td>
+                <td style="display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap;">
+                    <button onclick="submitRating(${s.stat_id})" class="submit-btn gold-btn" style="margin-top:0; padding:8px 14px; width:auto; font-size:0.72rem;">✅ Approve</button>
+                    <button onclick="rejectSubmission(${s.stat_id})" class="reject-btn">❌ Reject</button>
+                </td>
             </tr>`;
         });
+
+        // Update pending badge
+        loadManagerSummary();
     }
 
     async function submitRating(statId) {
@@ -2021,6 +2325,19 @@
         const res    = await fetch('/api/rate_player', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stat_id: statId, rating, token }) });
         const result = await res.json();
         if (res.ok) { showToast(`${result.message} · ${result.points_awarded} pts awarded`, 'success'); loadPendingStats(); loadRankingsAndAwards(); loadGlobalTeamCenter(); }
+        else         showToast('Error: ' + result.detail, 'error');
+    }
+
+    async function rejectSubmission(statId) {
+        if (!confirm('Are you sure you want to reject this submission?')) return;
+        const token = localStorage.getItem('rpcf_token');
+        const res   = await fetch('/api/rate_player', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stat_id: statId, rating: 0, token, action: 'reject' })
+        });
+        const result = await res.json();
+        if (res.ok) { showToast('Submission rejected ❌', 'error'); loadPendingStats(); loadManagerSummary(); }
         else         showToast('Error: ' + result.detail, 'error');
     }
 
