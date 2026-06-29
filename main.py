@@ -495,3 +495,25 @@ async def mark_all_read(data: dict):
     conn.commit()
     cursor.close(); conn.close()
     return {"message": "All notifications marked as read"}
+
+# ── KEEP-ALIVE PING (stops Supabase free tier from pausing) ──────────────────
+# Pings the database every 4 days automatically — no manual action needed
+
+async def keep_alive_ping():
+    """Runs forever in the background, pinging DB every 4 days."""
+    while True:
+        try:
+            conn   = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1")   # lightest possible query
+            cursor.close(); conn.close()
+            print(f"[Keep-Alive] DB pinged at {datetime.utcnow().strftime('%Y-%m-%d %H:%M')} UTC — Supabase stays awake ✅")
+        except Exception as e:
+            print(f"[Keep-Alive] Ping failed: {e}")
+        await asyncio.sleep(4 * 24 * 60 * 60)   # wait 4 days, then ping again
+
+@app.on_event("startup")
+async def startup_event():
+    """Starts the keep-alive background task when server launches."""
+    asyncio.create_task(keep_alive_ping())
+    print("[Keep-Alive] Background ping scheduler started — Supabase will never sleep 🔥")
