@@ -1932,14 +1932,16 @@
     setInterval(() => {
         if (localStorage.getItem('rpcf_user_id')) loadNotifications();
     }, 30000);
+
+    // ── TOAST ──────────────────────────────────────────────────────────
+    function showToast(msg, type = 'success') {
         const t = document.getElementById('toast');
         t.textContent = msg;
         t.className = `show ${type}`;
         setTimeout(() => { t.className = ''; }, 3500);
     }
 
-    // ── TOAST ──────────────────────────────────────────────────────────
-    function showToast(msg, type = 'success') {
+    // ── AUTH ───────────────────────────────────────────────────────────
     function toggleAuthMode() {
         isLoginMode = !isLoginMode;
         document.getElementById('auth-title').textContent   = isLoginMode ? 'PLAYER LOGIN' : 'JOIN THE SQUAD';
