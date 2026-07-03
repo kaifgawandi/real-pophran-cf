@@ -1386,8 +1386,26 @@
 
         <button class="btn-primary" onclick="handleAuth()" id="auth-btn">ENTER ARENA</button>
         <span class="auth-switch" onclick="toggleAuthMode()" id="auth-toggle">New Player? Register Here →</span>
+        <span class="auth-switch" onclick="showForgotPassword()" style="color:var(--muted); font-size:0.82rem; margin-top:6px;">Forgot Password? →</span>
     </div>
 </section>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal-overlay" id="forgot-modal" style="z-index:500;">
+    <div class="modal-box" style="max-width:420px;">
+        <button class="modal-close" onclick="closeForgotModal()">✕</button>
+        <h2 style="font-family:'Orbitron',sans-serif; font-size:1rem; color:var(--red); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">Reset Password</h2>
+        <p style="font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--muted); letter-spacing:1px; margin-bottom:20px;">Enter your name and the new password you want. Manager will approve the request.</p>
+        <div class="divider"></div>
+        <label class="field-label">Your Player Name</label>
+        <input type="text" id="reset-name" placeholder="Exact name you registered with">
+        <label class="field-label">New Password</label>
+        <input type="password" id="reset-newpass" placeholder="Enter new password">
+        <label class="field-label">Confirm New Password</label>
+        <input type="password" id="reset-confirmpass" placeholder="Repeat new password">
+        <button class="submit-btn" onclick="submitPasswordReset()" style="margin-top:20px;">Send Reset Request</button>
+    </div>
+</div>
 
 <!-- ═══════════════════ MAIN APP ═══════════════════ -->
 <div id="main-app">
@@ -1408,6 +1426,8 @@
             <button class="nav-btn player-only" onclick="switchPage('update-stats', this)">Log Match</button>
             <button class="nav-btn manager-only manager-nav" onclick="switchPage('manager-panel', this)">Portal</button>
             <button class="nav-btn manager-only manager-nav" onclick="switchPage('squad-roster', this)">Squad</button>
+            <button class="nav-btn manager-only manager-nav" onclick="switchPage('reset-requests', this)">Resets</button>
+            <button class="nav-btn manager-only manager-nav" onclick="switchPage('admin-panel', this)">Admin</button>
             <button class="nav-btn nav-logout" onclick="logout()">Logout</button>
         </div>
         </div>
@@ -1744,6 +1764,57 @@
             </div>
         </section>
 
+        <!-- ─── PASSWORD RESET REQUESTS (Manager Only) ─── -->
+        <section id="reset-requests" class="page-section manager-only" style="display:none;">
+            <div class="page-header">
+                <h1 style="color:var(--text);">Password <span style="color:var(--gold);">Reset Requests</span></h1>
+                <div class="page-subtext">Approve or reject player password reset requests</div>
+                <div class="divider gold"></div>
+            </div>
+            <div class="table-wrap">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="gold">Player</th>
+                                <th>Requested At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reset-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── ADMIN PANEL (Manager Only) ─── -->
+        <section id="admin-panel" class="page-section manager-only" style="display:none;">
+            <div class="page-header">
+                <h1 style="color:var(--text);">Admin <span style="color:var(--gold);">Panel</span></h1>
+                <div class="page-subtext">View · Edit · Ban · Delete players</div>
+                <div class="divider gold"></div>
+            </div>
+            <div class="table-wrap">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="gold">Player</th>
+                                <th>Role</th>
+                                <th>Position</th>
+                                <th>Jersey</th>
+                                <th>Matches</th>
+                                <th>Points</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
         <!-- ─── SQUAD ROSTER (Manager Only) ─── -->
         <section id="squad-roster" class="page-section">
             <div class="page-header">
@@ -2017,7 +2088,9 @@
         if (pageId === 'rankings')     loadRankingsAndAwards();
         if (pageId === 'team-center')  loadGlobalTeamCenter();
         if (pageId === 'manager-panel') { loadPendingStats(); loadManagerSummary(); }
-        if (pageId === 'squad-roster')  loadSquadRoster();
+        if (pageId === 'squad-roster')    loadSquadRoster();
+        if (pageId === 'reset-requests')  loadPasswordResets();
+        if (pageId === 'admin-panel')     loadAdminPanel();
     }
 
     // ── IMAGE UPLOADER ─────────────────────────────────────────────────
@@ -2133,7 +2206,7 @@
         }
 
         history.forEach(m => {
-            tbody.innerHTML += `<tr>
+            tbody.innerHTML += `<tr style='cursor:pointer;' onclick='viewPlayerPublicProfile(${p.user_id})'>
                 <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.85rem;">${m.date_logged}</td>
                 <td><span class="match-pill ${m.match_type}">${m.match_type}</span></td>
                 <td style="font-weight:700;">${m.goals}</td>
@@ -2429,6 +2502,184 @@
     document.getElementById('player-modal').addEventListener('click', function (e) {
         if (e.target === this) closeModal();
     });
+
+    // ── FORGOT PASSWORD ────────────────────────────────────────────────
+    function showForgotPassword() {
+        document.getElementById('forgot-modal').classList.add('active');
+    }
+    function closeForgotModal() {
+        document.getElementById('forgot-modal').classList.remove('active');
+        document.getElementById('reset-name').value = '';
+        document.getElementById('reset-newpass').value = '';
+        document.getElementById('reset-confirmpass').value = '';
+    }
+    async function submitPasswordReset() {
+        const name        = document.getElementById('reset-name').value.trim();
+        const newpass     = document.getElementById('reset-newpass').value;
+        const confirmpass = document.getElementById('reset-confirmpass').value;
+        if (!name || !newpass || !confirmpass) { showToast('Fill in all fields', 'error'); return; }
+        if (newpass !== confirmpass) { showToast('Passwords do not match!', 'error'); return; }
+        if (newpass.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; }
+        try {
+            const res    = await fetch('/api/request_password_reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, new_password: newpass }) });
+            const result = await res.json();
+            if (res.ok && result.status === 'success') {
+                showToast(result.message, 'success');
+                closeForgotModal();
+            } else { showToast(result.detail || result.message, 'error'); }
+        } catch(e) { showToast('Connection error. Try again.', 'error'); }
+    }
+
+    // ── PUBLIC PLAYER PROFILE VIEWER (Players viewing others) ─────────
+    async function viewPlayerPublicProfile(userId) {
+        if (!userId) return;
+        const res = await fetch(\`/api/player_public/\${userId}\`);
+        if (!res.ok) { showToast('Could not load player profile', 'error'); return; }
+        const p = await res.json();
+        document.getElementById('player-modal').classList.add('active');
+        document.getElementById('modal-avatar').src    = p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
+        document.getElementById('modal-name').textContent     = p.name;
+        document.getElementById('modal-position').textContent = p.position || 'N/A';
+        document.getElementById('modal-age').textContent      = \`Age: \${p.age || '--'}\`;
+        document.getElementById('modal-foot').textContent     = \`Foot: \${p.preferred_foot ? p.preferred_foot.charAt(0) : '-'}\`;
+        document.getElementById('modal-bio').textContent      = \`"\${p.bio}"\`;
+        document.getElementById('modal-matches').textContent  = p.total_matches || 0;
+        document.getElementById('modal-goals').textContent    = p.total_goals || 0;
+        document.getElementById('modal-assists').textContent  = p.total_assists || 0;
+        document.getElementById('modal-rating').textContent   = p.avg_rating || '0.0';
+        const histBody = document.getElementById('modal-history-body');
+        histBody.innerHTML = '';
+        if (!p.history || !p.history.length) {
+            histBody.innerHTML = \`<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>\`;
+        } else {
+            p.history.forEach(m => {
+                histBody.innerHTML += \`<tr>
+                    <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.8rem;">\${m.date_logged}</td>
+                    <td><span class="match-pill \${m.match_type}">\${m.match_type}</span></td>
+                    <td>\${m.goals}</td><td>\${m.assists}</td>
+                    <td style="color:var(--red); font-weight:700;">\${m.manager_rating.toFixed(1)}</td>
+                </tr>\`;
+            });
+        }
+    }
+
+    // ── PASSWORD RESETS (Manager) ─────────────────────────────────────
+    async function loadPasswordResets() {
+        const resets = await (await fetch('/api/pending_resets')).json();
+        const tbody  = document.getElementById('reset-body');
+        tbody.innerHTML = '';
+        if (!resets.length) {
+            tbody.innerHTML = `<tr><td colspan="3" style="color:var(--muted);padding:24px;font-family:'Share Tech Mono',monospace;">No pending reset requests.</td></tr>`;
+            return;
+        }
+        resets.forEach(r => {
+            tbody.innerHTML += `<tr>
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <img src="${r.profile_pic||'https://cdn-icons-png.flaticon.com/512/166/166258.png'}"
+                            style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);object-fit:cover;"
+                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'">
+                        <span style="font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;">${r.name}</span>
+                    </div>
+                </td>
+                <td style="font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:0.8rem;">${r.requested_at}</td>
+                <td style="display:flex;gap:8px;justify-content:center;">
+                    <button onclick="handleReset(${r.request_id},'approve')" class="submit-btn gold-btn" style="margin-top:0;padding:7px 14px;width:auto;font-size:0.75rem;">✅ Approve</button>
+                    <button onclick="handleReset(${r.request_id},'reject')" class="reject-btn">❌ Reject</button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    async function handleReset(requestId, action) {
+        const token = localStorage.getItem('rpcf_token');
+        const res   = await fetch('/api/handle_reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ request_id: requestId, action, token }) });
+        const result = await res.json();
+        if (res.ok) { showToast(result.message, action === 'approve' ? 'success' : 'error'); loadPasswordResets(); }
+        else showToast('Error: ' + result.detail, 'error');
+    }
+
+    // ── ADMIN PANEL ────────────────────────────────────────────────────
+    async function loadAdminPanel() {
+        const users = await (await fetch('/api/admin/users')).json();
+        const tbody = document.getElementById('admin-body');
+        tbody.innerHTML = '';
+        users.forEach(u => {
+            const isBanned = u.is_banned;
+            tbody.innerHTML += `<tr style="opacity:${isBanned?'0.5':'1'}">
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <img src="${u.profile_pic||'https://cdn-icons-png.flaticon.com/512/166/166258.png'}"
+                            style="width:30px;height:30px;border-radius:50%;border:1px solid var(--border);object-fit:cover;"
+                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'">
+                        <span style="font-family:'Orbitron',sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;">${u.name}</span>
+                    </div>
+                </td>
+                <td style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:${u.role==='Manager'?'var(--gold)':'var(--muted)'}">${u.role}</td>
+                <td style="font-size:0.85rem;">${u.position||'—'}</td>
+                <td style="font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--red);">${u.jersey_number?'#'+u.jersey_number:'—'}</td>
+                <td>${u.total_matches||0}</td>
+                <td style="color:var(--gold);font-family:'Orbitron',sans-serif;font-weight:700;">${u.total_points}</td>
+                <td><span style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:${isBanned?'var(--red)':'var(--success)'};">${isBanned?'BANNED':'ACTIVE'}</span></td>
+                <td style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+                    <button onclick="openEditModal(${JSON.stringify(u).replace(/"/g,'&quot;')})" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--cyan);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;font-family:'Orbitron',sans-serif;">✏ Edit</button>
+                    <button onclick="adminResetPassword(${u.user_id})" style="background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;font-family:'Orbitron',sans-serif;">🔑 Reset</button>
+                    <button onclick="adminBanUser(${u.user_id},${!isBanned})" style="background:${isBanned?'var(--cyan-dim)':'var(--red-dim)'};color:${isBanned?'var(--cyan)':'var(--red)'};border:1px solid ${isBanned?'var(--cyan)':'var(--red)'};border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;font-family:'Orbitron',sans-serif;">${isBanned?'🔓 Unban':'🚫 Ban'}</button>
+                    ${u.role!=='Manager'?`<button onclick="adminDeleteUser(${u.user_id},'${u.name}')" style="background:rgba(255,59,92,0.2);color:var(--red);border:1px solid var(--red);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;font-family:'Orbitron',sans-serif;">🗑 Delete</button>`:''}
+                </td>
+            </tr>`;
+        });
+    }
+
+    // Edit user inline — opens a prompt-based quick edit
+    function openEditModal(user) {
+        const newName     = prompt(`Edit name (current: ${user.name}):`, user.name);
+        if (newName === null) return;
+        const newPosition = prompt(`Edit position (current: ${user.position}):`, user.position || 'Unassigned');
+        if (newPosition === null) return;
+        const newAge      = prompt(`Edit age (current: ${user.age}):`, user.age || 0);
+        if (newAge === null) return;
+        const newJersey   = prompt(`Edit jersey number (current: ${user.jersey_number}):`, user.jersey_number || 0);
+        if (newJersey === null) return;
+        adminEditUser(user.user_id, newName.trim(), newPosition.trim(), parseInt(newAge)||0, parseInt(newJersey)||0, user.role);
+    }
+
+    async function adminEditUser(userId, name, position, age, jersey, role) {
+        const token = localStorage.getItem('rpcf_token');
+        const res   = await fetch('/api/admin/edit_user', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, target_user_id: userId, name, position, age, jersey_number: jersey, role }) });
+        const result = await res.json();
+        if (res.ok) { showToast(result.message, 'success'); loadAdminPanel(); }
+        else showToast('Error: ' + (result.detail || result.message), 'error');
+    }
+
+    async function adminResetPassword(userId) {
+        const newpass = prompt('Enter new password for this player:');
+        if (!newpass || newpass.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; }
+        const token = localStorage.getItem('rpcf_token');
+        const res   = await fetch('/api/admin/reset_password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, target_user_id: userId, new_password: newpass }) });
+        const result = await res.json();
+        if (res.ok) showToast(result.message, 'success');
+        else showToast('Error: ' + result.detail, 'error');
+    }
+
+    async function adminBanUser(userId, ban) {
+        const action = ban ? 'ban' : 'unban';
+        if (!confirm(`Are you sure you want to ${action} this player?`)) return;
+        const token = localStorage.getItem('rpcf_token');
+        const res   = await fetch('/api/admin/ban_user', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, target_user_id: userId, banned: ban }) });
+        const result = await res.json();
+        if (res.ok) { showToast(result.message, ban ? 'error' : 'success'); loadAdminPanel(); }
+        else showToast('Error: ' + result.detail, 'error');
+    }
+
+    async function adminDeleteUser(userId, name) {
+        if (!confirm(`⚠️ DELETE ${name}? This removes ALL their stats and history. This cannot be undone!`)) return;
+        const token = localStorage.getItem('rpcf_token');
+        const res   = await fetch(`/api/admin/delete_user/${userId}?token=${token}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (res.ok) { showToast(result.message, 'success'); loadAdminPanel(); }
+        else showToast('Error: ' + result.detail, 'error');
+    }
 
     // ── BOOT ───────────────────────────────────────────────────────────
     window.onload = () => { if (localStorage.getItem('rpcf_user_id')) initializeApp(); };
