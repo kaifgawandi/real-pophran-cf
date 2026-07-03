@@ -6,24 +6,24 @@ import psycopg2
 import psycopg2.extras
 import os
 import asyncio
+import logging
+from psycopg2 import pool
 from contextlib import asynccontextmanager
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
 async def keep_alive_ping():
-    # Wait 60s after startup so app boots fully before hitting DB
     await asyncio.sleep(60)
     while True:
         try:
             conn   = get_db()
             cursor = conn.cursor()
             cursor.execute("SELECT 1")
-            cursor.close(); conn.close()
+            cursor.close(); release_db(conn)
             print(f"[Keep-Alive] DB pinged — Supabase stays awake")
         except Exception as e:
             print(f"[Keep-Alive] Ping failed: {e}")
-        # Sleep 4 days before next ping
         await asyncio.sleep(4 * 24 * 60 * 60)
 
 @asynccontextmanager
@@ -47,10 +47,24 @@ HTML_PATH = os.path.join(BASE_DIR, 'index.html')
 # ── DATABASE ──────────────────────────────────────────────────────────────────
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# ── CONNECTION POOLING ────────────────────────────────────────────────────────
+try:
+    db_pool = pool.ThreadedConnectionPool(1, 20, dsn=DATABASE_URL, sslmode="require")
+    logger.info("Database connection pool initialized successfully.")
+except Exception as e:
+    logger.error(f"Failed to initialize database pool: {e}")
+
 def get_db():
-    """Returns a connection with RealDictCursor so rows behave like dicts."""
-    conn = psycopg2.connect(DATABASE_URL, sslmode="require")
-    return conn
+    return db_pool.getconn()
+
+def release_db(conn):
+    db_pool.putconn(conn)
 
 def fetchone(cursor):
     row = cursor.fetchone()
@@ -99,7 +113,7 @@ class ManagerRating(BaseModel):
     stat_id: int
     rating:  float
     token:   str
-    action:  str = "approve"   # "approve" or "reject"
+    action:  str = "approve"
 
 class ProfileUpdate(BaseModel):
     token:          str
@@ -133,41 +147,35 @@ async def register_user(user: UserAuth):
         conn.commit()
     except psycopg2.errors.UniqueViolation:
         conn.rollback()
-        cursor.close(); conn.close()
+        cursor.close(); release_db(conn)
         return {"status": "error", "message": "Player name already exists!"}
-    finally:
-        cursor.close(); conn.close()
+    
+    cursor.close(); release_db(conn)
     return {"status": "success", "message": "Registration successful! You can now log in."}
 
 # ── LOGIN ─────────────────────────────────────────────────────────────────────
 @app.post("/api/login")
 async def login_user(user: UserAuth):
-    conn   = get_db()
+    conn = get_db()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute(
         "SELECT user_id, role, name, password, is_banned FROM users WHERE name = %s",
         (user.name,)
     )
     record = fetchone(cursor)
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
+
     if not record or not verify_password(user.password, record["password"]):
+        logger.warning(f"Failed login attempt for user: {user.name}")
         return {"status": "error", "message": "Invalid name or password."}
-    # Check if user is banned
+    
     if record.get("is_banned"):
-        cursor.close(); conn.close()
-        return {"status": "error", "message": "Your account has been suspended. Contact the manager."}
-    token = create_access_token({
-        "sub":  record["name"],
-        "role": record["role"],
-        "id":   record["user_id"]
-    })
-    return {
-        "status":  "success",
-        "token":   token,
-        "role":    record["role"],
-        "name":    record["name"],
-        "user_id": record["user_id"]
-    }
+        logger.warning(f"Banned user attempted login: {user.name}")
+        return {"status": "error", "message": "Your account has been suspended by the Manager."}
+
+    logger.info(f"Successful login: {user.name}")
+    token = create_access_token({"sub": record["name"], "role": record["role"], "id": record["user_id"]})
+    return {"status": "success", "token": token, "role": record["role"], "name": record["name"], "user_id": record["user_id"]}
 
 # ── PROFILE GET ───────────────────────────────────────────────────────────────
 @app.get("/api/profile/{player_id}")
@@ -179,7 +187,7 @@ async def get_profile(player_id: int):
         (player_id,)
     )
     record = fetchone(cursor)
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     if record:
         return record
     raise HTTPException(status_code=404, detail="Profile not found.")
@@ -191,15 +199,16 @@ async def update_profile(profile: ProfileUpdate):
     user_id = payload.get("id")
     conn    = get_db()
     cursor  = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    # Check jersey uniqueness (skip if 0)
+    
     if profile.jersey_number:
         cursor.execute(
             "SELECT user_id FROM users WHERE jersey_number = %s AND user_id != %s",
             (profile.jersey_number, user_id)
         )
         if fetchone(cursor):
-            cursor.close(); conn.close()
+            cursor.close(); release_db(conn)
             raise HTTPException(status_code=400, detail=f"Jersey #{profile.jersey_number} is already taken!")
+    
     cursor.execute(
         """UPDATE users
            SET position=%s, age=%s, jersey_number=%s, bio=%s,
@@ -209,7 +218,7 @@ async def update_profile(profile: ProfileUpdate):
          profile.bio, profile.preferred_foot, profile.profile_pic, user_id)
     )
     conn.commit()
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     return {"message": "Profile updated successfully!"}
 
 # ── SUBMIT STATS ──────────────────────────────────────────────────────────────
@@ -220,6 +229,7 @@ async def submit_stats(stat: StatSubmission):
         raise HTTPException(status_code=403, detail="Only players can submit stats.")
     if stat.match_type not in ["Practice", "League", "Main"]:
         raise HTTPException(status_code=400, detail="Invalid match type.")
+    
     conn   = get_db()
     cursor = conn.cursor()
     cursor.execute(
@@ -227,7 +237,7 @@ async def submit_stats(stat: StatSubmission):
         (payload.get("id"), stat.match_type, stat.goals, stat.assists)
     )
     conn.commit()
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     return {"message": "Stats submitted! Awaiting Manager Rating."}
 
 # ── RATE PLAYER ───────────────────────────────────────────────────────────────
@@ -241,13 +251,13 @@ async def rate_player(rating_data: ManagerRating):
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("SELECT match_type, player_id FROM stats WHERE stat_id = %s", (rating_data.stat_id,))
     stat_record = fetchone(cursor)
+    
     if not stat_record:
-        cursor.close(); conn.close()
+        cursor.close(); release_db(conn)
         raise HTTPException(status_code=404, detail="Record not found.")
 
     player_id = stat_record["player_id"]
 
-    # ── REJECT ────────────────────────────────────────────────────────────────
     if rating_data.action == "reject":
         cursor.execute("UPDATE stats SET status='Rejected' WHERE stat_id=%s", (rating_data.stat_id,))
         cursor.execute(
@@ -255,12 +265,11 @@ async def rate_player(rating_data: ManagerRating):
             (player_id, "❌ Your match submission was rejected by the manager.")
         )
         conn.commit()
-        cursor.close(); conn.close()
+        cursor.close(); release_db(conn)
         return {"message": "Submission rejected.", "points_awarded": 0}
 
-    # ── APPROVE ───────────────────────────────────────────────────────────────
     if not 0 <= rating_data.rating <= 10:
-        cursor.close(); conn.close()
+        cursor.close(); release_db(conn)
         raise HTTPException(status_code=400, detail="Rating must be between 0 and 10.")
 
     multiplier   = 0.5 if stat_record["match_type"] == "Practice" else 1.0 if stat_record["match_type"] == "League" else 2.0
@@ -271,13 +280,11 @@ async def rate_player(rating_data: ManagerRating):
         (rating_data.rating, total_points, rating_data.stat_id)
     )
 
-    # Notify player about rating
     cursor.execute(
         "INSERT INTO notifications (user_id, message) VALUES (%s, %s)",
         (player_id, f"⭐ Manager rated your performance: {rating_data.rating}/10 · {total_points} pts awarded!")
     )
 
-    # Check if player is now Rank #1
     cursor.execute("""
         SELECT u.user_id, COALESCE(SUM(s.total_points), 0) AS pts
         FROM users u
@@ -294,7 +301,7 @@ async def rate_player(rating_data: ManagerRating):
         )
 
     conn.commit()
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     return {"message": "Rating applied!", "points_awarded": total_points}
 
 # ── PLAYER DASHBOARD ──────────────────────────────────────────────────────────
@@ -312,7 +319,7 @@ async def get_player_dashboard(player_id: int):
         WHERE player_id = %s AND status = 'Rated'
     """, (player_id,))
     data = fetchone(cursor)
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     return {
         "matches":    data["total_matches"] or 0,
         "goals":      data["total_goals"]   or 0,
@@ -332,7 +339,7 @@ async def get_chart_data(player_id: int):
         ORDER BY stat_id ASC LIMIT 10
     """, (player_id,))
     records = fetchall(cursor)
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     return {
         "labels":  [f"Match {i+1}" for i in range(len(records))],
         "goals":   [r["goals"]          for r in records],
@@ -352,8 +359,8 @@ async def get_match_history(player_id: int):
         ORDER BY stat_id DESC
     """, (player_id,))
     history = fetchall(cursor)
-    cursor.close(); conn.close()
-    # Convert date to string so JSON serialization works
+    cursor.close(); release_db(conn)
+    
     for row in history:
         if row.get("date_logged"):
             row["date_logged"] = str(row["date_logged"])
@@ -383,8 +390,8 @@ async def get_rankings():
         ORDER BY overall_points DESC, total_goals DESC
     """)
     rankings = fetchall(cursor)
-    cursor.close(); conn.close()
-    # Round floats for clean JSON
+    cursor.close(); release_db(conn)
+    
     for r in rankings:
         r["overall_points"] = round(float(r["overall_points"] or 0), 1)
         r["avg_rating"]     = round(float(r["avg_rating"] or 0), 1)
@@ -403,7 +410,7 @@ async def get_team_stats():
         FROM stats WHERE status = 'Rated'
     """)
     data = fetchone(cursor)
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     return {
         "team_goals":      data["total_goals"]   or 0,
         "team_assists":    data["total_assists"]  or 0,
@@ -424,7 +431,7 @@ async def get_pending_stats():
         ORDER BY s.stat_id DESC
     """)
     stats = fetchall(cursor)
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     for s in stats:
         if s.get("date_logged"):
             s["date_logged"] = str(s["date_logged"])
@@ -467,7 +474,7 @@ async def get_manager_summary():
     """)
     low = fetchone(cursor)
 
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     return {
         "pending":       pending,
         "today_matches": today,
@@ -490,7 +497,7 @@ async def get_notifications(user_id: int):
         ORDER BY notif_id DESC LIMIT 20
     """, (user_id,))
     notifs = fetchall(cursor)
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     for n in notifs:
         if n.get("created_at"):
             n["created_at"] = str(n["created_at"])[:16]
@@ -506,7 +513,7 @@ async def mark_notification_read(data: NotificationRead):
         (data.notif_id, payload.get("id"))
     )
     conn.commit()
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     return {"message": "Marked as read"}
 
 @app.post("/api/mark_all_read")
@@ -519,20 +526,50 @@ async def mark_all_read(data: dict):
         (payload.get("id"),)
     )
     conn.commit()
-    cursor.close(); conn.close()
+    cursor.close(); release_db(conn)
     return {"message": "All notifications marked as read"}
 
-# ── PASSWORD RESET REQUEST (Player) ──────────────────────────────────────────
-class PasswordResetRequest(BaseModel):
-    name: str
-    new_password: str
+# ── PUBLIC PROFILE (Players viewing others) ───────────────────────────────────
+@app.get("/api/player_public/{target_id}")
+async def get_player_public(target_id: int):
+    conn = get_db()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cursor.execute("""
+        SELECT u.name, u.position, u.age, u.preferred_foot, u.bio, u.profile_pic,
+               COUNT(s.stat_id) AS total_matches,
+               COALESCE(SUM(s.goals), 0) AS total_goals,
+               COALESCE(SUM(s.assists), 0) AS total_assists,
+               AVG(s.manager_rating) AS avg_rating
+        FROM users u
+        LEFT JOIN stats s ON u.user_id = s.player_id AND s.status = 'Rated'
+        WHERE u.user_id = %s
+        GROUP BY u.user_id
+    """, (target_id,))
+    player_data = fetchone(cursor)
+    
+    if not player_data:
+        cursor.close(); release_db(conn)
+        raise HTTPException(status_code=404, detail="Player not found")
+        
+    cursor.execute("""
+        SELECT date_logged, match_type, goals, assists, manager_rating 
+        FROM stats WHERE player_id = %s AND status = 'Rated' 
+        ORDER BY stat_id DESC LIMIT 5
+    """, (target_id,))
+    history = fetchall(cursor)
+    for h in history:
+        h["date_logged"] = str(h["date_logged"])
+        
+    player_data["history"] = history
+    if player_data["avg_rating"]:
+        player_data["avg_rating"] = round(float(player_data["avg_rating"]), 1)
+        
+    cursor.close(); release_db(conn)
+    return player_data
 
-class ResetAction(BaseModel):
-    request_id: int
-    action: str   # "approve" or "reject"
-    token: str
-
-class ManagerEditUser(BaseModel):
+# ── ADMIN OPERATIONS (Manager Only) ───────────────────────────────────────────
+class AdminEditUser(BaseModel):
     token: str
     target_user_id: int
     name: str
@@ -541,241 +578,68 @@ class ManagerEditUser(BaseModel):
     jersey_number: int
     role: str
 
-class ManagerResetPassword(BaseModel):
-    token: str
-    target_user_id: int
-    new_password: str
-
-class BanUser(BaseModel):
+class AdminBanUser(BaseModel):
     token: str
     target_user_id: int
     banned: bool
 
-@app.post("/api/request_password_reset")
-async def request_password_reset(data: PasswordResetRequest):
-    conn   = get_db()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    # Check player exists
-    cursor.execute("SELECT user_id, role FROM users WHERE name = %s", (data.name,))
-    user = fetchone(cursor)
-    if not user:
-        cursor.close(); conn.close()
-        raise HTTPException(status_code=404, detail="No player found with that name.")
-    if user["role"] == "Manager":
-        cursor.close(); conn.close()
-        raise HTTPException(status_code=403, detail="Manager passwords cannot be reset this way.")
-    # Check no pending request already exists
-    cursor.execute(
-        "SELECT request_id FROM password_resets WHERE user_id=%s AND status='Pending'",
-        (user["user_id"],)
-    )
-    if fetchone(cursor):
-        cursor.close(); conn.close()
-        return {"status": "error", "message": "You already have a pending reset request. Wait for manager approval."}
-    # Hash the new password and store request
-    hashed = get_password_hash(data.new_password)
-    cursor.execute(
-        "INSERT INTO password_resets (user_id, new_password_hash) VALUES (%s, %s)",
-        (user["user_id"], hashed)
-    )
-    # Notify manager (user_id of manager)
-    cursor.execute("SELECT user_id FROM users WHERE role='Manager' LIMIT 1")
-    mgr = fetchone(cursor)
-    if mgr:
-        cursor.execute(
-            "INSERT INTO notifications (user_id, message) VALUES (%s, %s)",
-            (mgr["user_id"], f"🔑 Password reset requested by player: {data.name}")
-        )
-    conn.commit()
-    cursor.close(); conn.close()
-    return {"status": "success", "message": "Reset request sent! Wait for manager to approve it."}
-
-@app.get("/api/pending_resets")
-async def get_pending_resets():
-    conn   = get_db()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute("""
-        SELECT pr.request_id, u.name, u.profile_pic, pr.requested_at, pr.status
-        FROM password_resets pr
-        JOIN users u ON pr.user_id = u.user_id
-        WHERE pr.status = 'Pending'
-        ORDER BY pr.request_id DESC
-    """)
-    resets = fetchall(cursor)
-    cursor.close(); conn.close()
-    for r in resets:
-        if r.get("requested_at"):
-            r["requested_at"] = str(r["requested_at"])[:16]
-    return resets
-
-@app.post("/api/handle_reset")
-async def handle_reset(data: ResetAction):
-    payload = verify_token(data.token)
-    if payload.get("role") != "Manager":
-        raise HTTPException(status_code=403, detail="Manager only.")
-    conn   = get_db()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute(
-        "SELECT user_id, new_password_hash FROM password_resets WHERE request_id=%s AND status='Pending'",
-        (data.request_id,)
-    )
-    req = fetchone(cursor)
-    if not req:
-        cursor.close(); conn.close()
-        raise HTTPException(status_code=404, detail="Request not found or already handled.")
-    if data.action == "approve":
-        cursor.execute(
-            "UPDATE users SET password=%s WHERE user_id=%s",
-            (req["new_password_hash"], req["user_id"])
-        )
-        cursor.execute(
-            "UPDATE password_resets SET status='Approved' WHERE request_id=%s",
-            (data.request_id,)
-        )
-        cursor.execute(
-            "INSERT INTO notifications (user_id, message) VALUES (%s, %s)",
-            (req["user_id"], "✅ Your password reset was approved! You can now login with your new password.")
-        )
-    else:
-        cursor.execute(
-            "UPDATE password_resets SET status='Rejected' WHERE request_id=%s",
-            (data.request_id,)
-        )
-        cursor.execute(
-            "INSERT INTO notifications (user_id, message) VALUES (%s, %s)",
-            (req["user_id"], "❌ Your password reset request was rejected by the manager.")
-        )
-    conn.commit()
-    cursor.close(); conn.close()
-    return {"message": f"Reset request {data.action}d successfully."}
-
-# ── ADMIN: GET ALL USERS ──────────────────────────────────────────────────────
 @app.get("/api/admin/users")
-async def get_all_users():
-    conn   = get_db()
+async def admin_get_users():
+    conn = get_db()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
-        SELECT u.user_id, u.name, u.role, u.position, u.age,
-               u.jersey_number, u.preferred_foot, u.profile_pic,
-               COALESCE(u.is_banned, FALSE) as is_banned,
-               COUNT(s.stat_id) as total_matches,
-               COALESCE(SUM(s.total_points),0) as total_points
+        SELECT u.user_id, u.name, u.role, u.position, u.jersey_number, u.profile_pic, u.is_banned,
+               COUNT(s.stat_id) AS total_matches,
+               COALESCE(SUM(s.total_points), 0) AS total_points
         FROM users u
-        LEFT JOIN stats s ON u.user_id = s.player_id AND s.status='Rated'
-        GROUP BY u.user_id
-        ORDER BY u.role DESC, u.name ASC
+        LEFT JOIN stats s ON u.user_id = s.player_id AND s.status = 'Rated'
+        GROUP BY u.user_id ORDER BY u.user_id ASC
     """)
     users = fetchall(cursor)
-    cursor.close(); conn.close()
-    for u in users:
-        u["total_points"] = round(float(u["total_points"] or 0), 1)
+    cursor.close(); release_db(conn)
     return users
 
-# ── ADMIN: EDIT USER ──────────────────────────────────────────────────────────
 @app.post("/api/admin/edit_user")
-async def admin_edit_user(data: ManagerEditUser):
+async def admin_edit_user(data: AdminEditUser):
     payload = verify_token(data.token)
     if payload.get("role") != "Manager":
-        raise HTTPException(status_code=403, detail="Manager only.")
-    conn   = get_db()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    # Check jersey uniqueness
-    if data.jersey_number:
-        cursor.execute(
-            "SELECT user_id FROM users WHERE jersey_number=%s AND user_id!=%s",
-            (data.jersey_number, data.target_user_id)
-        )
-        if fetchone(cursor):
-            cursor.close(); conn.close()
-            raise HTTPException(status_code=400, detail=f"Jersey #{data.jersey_number} already taken!")
-    cursor.execute(
-        "UPDATE users SET name=%s, position=%s, age=%s, jersey_number=%s, role=%s WHERE user_id=%s",
-        (data.name, data.position, data.age, data.jersey_number, data.role, data.target_user_id)
-    )
-    conn.commit()
-    cursor.close(); conn.close()
-    return {"message": "User updated successfully."}
-
-# ── ADMIN: RESET USER PASSWORD (Manager direct) ───────────────────────────────
-@app.post("/api/admin/reset_password")
-async def admin_reset_password(data: ManagerResetPassword):
-    payload = verify_token(data.token)
-    if payload.get("role") != "Manager":
-        raise HTTPException(status_code=403, detail="Manager only.")
-    conn   = get_db()
+        raise HTTPException(status_code=403, detail="Manager access required.")
+    
+    conn = get_db()
     cursor = conn.cursor()
-    hashed = get_password_hash(data.new_password)
-    cursor.execute("UPDATE users SET password=%s WHERE user_id=%s", (hashed, data.target_user_id))
+    cursor.execute("""
+        UPDATE users SET name=%s, position=%s, age=%s, jersey_number=%s, role=%s 
+        WHERE user_id=%s
+    """, (data.name, data.position, data.age, data.jersey_number, data.role, data.target_user_id))
     conn.commit()
-    cursor.close(); conn.close()
-    return {"message": "Password reset successfully."}
+    cursor.close(); release_db(conn)
+    return {"message": "Player details updated successfully."}
 
-# ── ADMIN: BAN / UNBAN USER ───────────────────────────────────────────────────
 @app.post("/api/admin/ban_user")
-async def ban_user(data: BanUser):
+async def admin_ban_user(data: AdminBanUser):
     payload = verify_token(data.token)
     if payload.get("role") != "Manager":
-        raise HTTPException(status_code=403, detail="Manager only.")
-    conn   = get_db()
+        raise HTTPException(status_code=403, detail="Manager access required.")
+    
+    conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("UPDATE users SET is_banned=%s WHERE user_id=%s", (data.banned, data.target_user_id))
+    cursor.execute("UPDATE users SET is_banned = %s WHERE user_id = %s", (data.banned, data.target_user_id))
     conn.commit()
-    cursor.close(); conn.close()
-    action = "banned" if data.banned else "unbanned"
-    return {"message": f"User {action} successfully."}
+    cursor.close(); release_db(conn)
+    status = "banned" if data.banned else "unbanned"
+    return {"message": f"Player has been {status}."}
 
-# ── ADMIN: DELETE USER ────────────────────────────────────────────────────────
-@app.delete("/api/admin/delete_user/{user_id}")
-async def delete_user(user_id: int, token: str):
+@app.delete("/api/admin/delete_user/{target_id}")
+async def admin_delete_user(target_id: int, token: str):
     payload = verify_token(token)
     if payload.get("role") != "Manager":
-        raise HTTPException(status_code=403, detail="Manager only.")
-    if payload.get("id") == user_id:
-        raise HTTPException(status_code=400, detail="You cannot delete yourself.")
-    conn   = get_db()
+        raise HTTPException(status_code=403, detail="Manager access required.")
+    
+    conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM notifications WHERE user_id=%s", (user_id,))
-    cursor.execute("DELETE FROM password_resets WHERE user_id=%s", (user_id,))
-    cursor.execute("DELETE FROM stats WHERE player_id=%s", (user_id,))
-    cursor.execute("DELETE FROM users WHERE user_id=%s", (user_id,))
+    cursor.execute("DELETE FROM stats WHERE player_id = %s", (target_id,))
+    cursor.execute("DELETE FROM notifications WHERE user_id = %s", (target_id,))
+    cursor.execute("DELETE FROM users WHERE user_id = %s", (target_id,))
     conn.commit()
-    cursor.close(); conn.close()
-    return {"message": "User deleted successfully."}
-
-# ── PUBLIC: VIEW ANY PLAYER PROFILE ──────────────────────────────────────────
-@app.get("/api/player_public/{player_id}")
-async def get_public_profile(player_id: int):
-    conn   = get_db()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute("""
-        SELECT u.user_id, u.name, u.position, u.age, u.jersey_number,
-               u.bio, u.preferred_foot, u.profile_pic,
-               COUNT(s.stat_id) as total_matches,
-               COALESCE(SUM(s.goals),0) as total_goals,
-               COALESCE(SUM(s.assists),0) as total_assists,
-               COALESCE(SUM(s.total_points),0) as total_points,
-               AVG(s.manager_rating) as avg_rating
-        FROM users u
-        LEFT JOIN stats s ON u.user_id = s.player_id AND s.status='Rated'
-        WHERE u.user_id=%s AND u.role='Player'
-        GROUP BY u.user_id
-    """, (player_id,))
-    profile = fetchone(cursor)
-    if not profile:
-        cursor.close(); conn.close()
-        raise HTTPException(status_code=404, detail="Player not found.")
-    # Recent history
-    cursor.execute("""
-        SELECT date_logged, match_type, goals, assists, manager_rating
-        FROM stats WHERE player_id=%s AND status='Rated'
-        ORDER BY stat_id DESC LIMIT 5
-    """, (player_id,))
-    history = fetchall(cursor)
-    cursor.close(); conn.close()
-    for row in history:
-        if row.get("date_logged"):
-            row["date_logged"] = str(row["date_logged"])
-    profile["total_points"] = round(float(profile["total_points"] or 0), 1)
-    profile["avg_rating"]   = round(float(profile["avg_rating"] or 0), 1)
-    profile["history"]      = history
-    return profile
+    cursor.close(); release_db(conn)
+    return {"message": "Player data permanently deleted."}
