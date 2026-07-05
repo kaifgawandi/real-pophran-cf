@@ -2614,39 +2614,86 @@
         tbody.innerHTML = '';
         users.forEach(function(u) {
             var isBanned = u.is_banned;
-            var op = isBanned ? '0.5' : '1';
-            var statusColor = isBanned ? 'var(--red)' : 'var(--success)';
-            var statusText  = isBanned ? 'BANNED' : 'ACTIVE';
-            var banLabel    = isBanned ? 'Unban' : 'Ban';
-            var banColor    = isBanned ? 'var(--cyan)' : 'var(--red)';
-            var banBg       = isBanned ? 'var(--cyan-dim)' : 'var(--red-dim)';
-            var roleColor   = u.role === 'Manager' ? 'var(--gold)' : 'var(--muted)';
-            var jersey      = u.jersey_number ? '#' + u.jersey_number : '—';
-            var pic         = u.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
-            var deleteBtn   = u.role !== 'Manager' ?
-                '<button onclick="adminDeleteUser(' + u.user_id + ',\''+u.name+'\')" style="background:rgba(255,59,92,0.2);color:var(--red);border:1px solid var(--red);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">Delete</button>' : '';
-            var userData = encodeURIComponent(JSON.stringify({user_id:u.user_id,name:u.name,position:u.position,age:u.age,jersey_number:u.jersey_number,role:u.role}));
-            tbody.innerHTML +=
-                '<tr style="opacity:' + op + '">' +
-                '<td><div style="display:flex;align-items:center;gap:10px;">' +
-                '<img src="' + pic + '" style="width:30px;height:30px;border-radius:50%;border:1px solid var(--border);object-fit:cover;" onerror=\"this.src=\x27https://cdn-icons-png.flaticon.com/512/166/166258.png\x27\">' +
-                '<span style="font-family:Orbitron,sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;">' + u.name + '</span>' +
-                '</div></td>' +
-                '<td style="color:' + roleColor + ';font-size:0.78rem;">' + u.role + '</td>' +
-                '<td>' + (u.position || '—') + '</td>' +
-                '<td style="color:var(--red);">' + jersey + '</td>' +
-                '<td>' + (u.total_matches || 0) + '</td>' +
-                '<td style="color:var(--gold);font-weight:700;">' + u.total_points + '</td>' +
-                '<td><span style="font-size:0.72rem;color:' + statusColor + ';">' + statusText + '</span></td>' +
-                '<td style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">' +
-                '<button onclick="openEditModal('' + userData + '')" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--cyan);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">Edit</button>' +
-                '<button onclick="adminResetPassword(' + u.user_id + ')" style="background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">Reset Pwd</button>' +
-                '<button onclick="adminBanUser(' + u.user_id + ',' + !isBanned + ')" style="background:' + banBg + ';color:' + banColor + ';border:1px solid ' + banColor + ';border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">' + banLabel + '</button>' +
-                deleteBtn +
-                '</td></tr>';
+            // Build row using DOM - zero string quote issues possible
+            var tr = document.createElement('tr');
+            tr.style.opacity = isBanned ? '0.5' : '1';
+
+            // Player cell
+            var tdPlayer = document.createElement('td');
+            var div = document.createElement('div');
+            div.style.cssText = 'display:flex;align-items:center;gap:10px;';
+            var img = document.createElement('img');
+            img.src = u.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
+            img.style.cssText = 'width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid #1a2d45;';
+            img.onerror = function() { this.style.display='none'; };
+            var span = document.createElement('span');
+            span.textContent = u.name;
+            span.style.cssText = 'font-family:Orbitron,sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;';
+            div.appendChild(img); div.appendChild(span);
+            tdPlayer.appendChild(div); tr.appendChild(tdPlayer);
+
+            // Role
+            var tdRole = document.createElement('td');
+            tdRole.textContent = u.role;
+            tdRole.style.color = u.role === 'Manager' ? 'var(--gold)' : 'var(--muted)';
+            tdRole.style.fontSize = '0.78rem';
+            tr.appendChild(tdRole);
+
+            // Position
+            var tdPos = document.createElement('td');
+            tdPos.textContent = u.position || '-';
+            tr.appendChild(tdPos);
+
+            // Jersey
+            var tdJersey = document.createElement('td');
+            tdJersey.textContent = u.jersey_number ? '#' + u.jersey_number : '-';
+            tdJersey.style.color = 'var(--red)';
+            tr.appendChild(tdJersey);
+
+            // Matches
+            var tdMatches = document.createElement('td');
+            tdMatches.textContent = u.total_matches || 0;
+            tr.appendChild(tdMatches);
+
+            // Points
+            var tdPts = document.createElement('td');
+            tdPts.textContent = u.total_points || 0;
+            tdPts.style.cssText = 'color:var(--gold);font-weight:700;';
+            tr.appendChild(tdPts);
+
+            // Status
+            var tdStatus = document.createElement('td');
+            var statusSpan = document.createElement('span');
+            statusSpan.textContent = isBanned ? 'BANNED' : 'ACTIVE';
+            statusSpan.style.cssText = 'font-size:0.72rem;color:' + (isBanned ? 'var(--red)' : 'var(--success)') + ';';
+            tdStatus.appendChild(statusSpan);
+            tr.appendChild(tdStatus);
+
+            // Actions
+            var tdActions = document.createElement('td');
+            tdActions.style.cssText = 'display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:8px;';
+
+            function makeBtn(text, bg, color, border, fn) {
+                var b = document.createElement('button');
+                b.textContent = text;
+                b.style.cssText = 'background:' + bg + ';color:' + color + ';border:1px solid ' + border + ';border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;';
+                b.onclick = fn;
+                return b;
+            }
+
+            var userData = {user_id:u.user_id,name:u.name,position:u.position,age:u.age,jersey_number:u.jersey_number,role:u.role};
+            tdActions.appendChild(makeBtn('Edit', 'var(--cyan-dim)', 'var(--cyan)', 'var(--cyan)', function() { openEditModal(encodeURIComponent(JSON.stringify(userData))); }));
+            tdActions.appendChild(makeBtn('Reset Pwd', 'var(--gold-dim)', 'var(--gold)', 'var(--gold)', function() { adminResetPassword(u.user_id); }));
+            var banBg = isBanned ? 'var(--cyan-dim)' : 'var(--red-dim)';
+            var banColor = isBanned ? 'var(--cyan)' : 'var(--red)';
+            tdActions.appendChild(makeBtn(isBanned ? 'Unban' : 'Ban', banBg, banColor, banColor, function() { adminBanUser(u.user_id, !isBanned); }));
+            if (u.role !== 'Manager') {
+                tdActions.appendChild(makeBtn('Delete', 'rgba(255,59,92,0.2)', 'var(--red)', 'var(--red)', function() { adminDeleteUser(u.user_id, u.name); }));
+            }
+            tr.appendChild(tdActions);
+            tbody.appendChild(tr);
         });
     }
-
 
     async function adminEditUser(userId, name, position, age, jersey, role) {
         const token = localStorage.getItem('rpcf_token');
