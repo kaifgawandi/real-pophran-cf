@@ -643,3 +643,150 @@ async def admin_delete_user(target_id: int, token: str):
     conn.commit()
     cursor.close(); release_db(conn)
     return {"message": "Player data permanently deleted."}
+# ── FORGOT PASSWORD — REQUEST (Player submits reset request) ──────────────────
+class PasswordResetRequest(BaseModel):
+    name:         str
+    new_password: str
+
+@app.post("/api/forgot_password")
+async def forgot_password(data: PasswordResetRequest):
+    if not data.name or not data.new_password:
+        raise HTTPException(status_code=400, detail="Name and new password are required.")
+    if len(data.new_password) < 4:
+        raise HTTPException(status_code=400, detail="Password must be at least 4 characters.")
+
+    conn   = get_db()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    # Check player exists
+    cursor.execute("SELECT user_id FROM users WHERE name = %s AND role = 'Player'", (data.name,))
+    player = fetchone(cursor)
+    if not player:
+        cursor.close(); release_db(conn)
+        return {"status": "error", "message": "No player found with that name."}
+
+    # Check for existing pending request
+    cursor.execute(
+        "SELECT reset_id FROM password_resets WHERE user_id = %s AND status = 'Pending'",
+        (player["user_id"],)
+    )
+    if fetchone(cursor):
+        cursor.close(); release_db(conn)
+        return {"status": "error", "message": "You already have a pending reset request. Wait for manager approval."}
+
+    hashed_new = get_password_hash(data.new_password)
+    cursor.execute(
+        "INSERT INTO password_resets (user_id, new_password_hash) VALUES (%s, %s)",
+        (player["user_id"], hashed_new)
+    )
+    conn.commit()
+    cursor.close(); release_db(conn)
+    logger.info(f"Password reset requested for: {data.name}")
+    return {"status": "success", "message": "Reset request sent! Manager will approve it soon."}
+
+# ── FORGOT PASSWORD — MANAGER SEES PENDING REQUESTS ──────────────────────────
+@app.get("/api/pending_resets")
+async def get_pending_resets():
+    conn   = get_db()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("""
+        SELECT r.reset_id, u.name, u.user_id, u.profile_pic,
+               r.requested_at
+        FROM password_resets r
+        JOIN users u ON r.user_id = u.user_id
+        WHERE r.status = 'Pending'
+        ORDER BY r.reset_id DESC
+    """)
+    resets = fetchall(cursor)
+    cursor.close(); release_db(conn)
+    for r in resets:
+        if r.get("requested_at"):
+            r["requested_at"] = str(r["requested_at"])[:16]
+    return resets
+
+# ── FORGOT PASSWORD — MANAGER APPROVES OR REJECTS ────────────────────────────
+class ResetAction(BaseModel):
+    reset_id: int
+    token:    str
+    action:   str  # "approve" or "reject"
+
+@app.post("/api/handle_reset")
+async def handle_reset(data: ResetAction):
+    payload = verify_token(data.token)
+    if payload.get("role") != "Manager":
+        raise HTTPException(status_code=403, detail="Manager only.")
+
+    conn   = get_db()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute(
+        "SELECT user_id, new_password_hash FROM password_resets WHERE reset_id = %s AND status = 'Pending'",
+        (data.reset_id,)
+    )
+    reset = fetchone(cursor)
+    if not reset:
+        cursor.close(); release_db(conn)
+        raise HTTPException(status_code=404, detail="Reset request not found.")
+
+    if data.action == "approve":
+        cursor.execute(
+            "UPDATE users SET password = %s WHERE user_id = %s",
+            (reset["new_password_hash"], reset["user_id"])
+        )
+        cursor.execute(
+            "UPDATE password_resets SET status = 'Approved' WHERE reset_id = %s",
+            (data.reset_id,)
+        )
+        cursor.execute(
+            "INSERT INTO notifications (user_id, message) VALUES (%s, %s)",
+            (reset["user_id"], "✅ Your password reset was approved! Log in with your new password.")
+        )
+        msg = "Password reset approved."
+        logger.info(f"Password reset approved for user_id: {reset['user_id']}")
+    else:
+        cursor.execute(
+            "UPDATE password_resets SET status = 'Rejected' WHERE reset_id = %s",
+            (data.reset_id,)
+        )
+        cursor.execute(
+            "INSERT INTO notifications (user_id, message) VALUES (%s, %s)",
+            (reset["user_id"], "❌ Your password reset was rejected. Contact the manager directly.")
+        )
+        msg = "Password reset rejected."
+        logger.info(f"Password reset rejected for user_id: {reset['user_id']}")
+
+    conn.commit()
+    cursor.close(); release_db(conn)
+    return {"message": msg}
+
+# ── ADMIN: RESET ANY PLAYER'S PASSWORD ────────────────────────────────────────
+class AdminResetPassword(BaseModel):
+    token:          str
+    target_user_id: int
+    new_password:   str
+
+@app.post("/api/admin/reset_password")
+async def admin_reset_password(data: AdminResetPassword):
+    payload = verify_token(data.token)
+    if payload.get("role") != "Manager":
+        raise HTTPException(status_code=403, detail="Manager access required.")
+    if len(data.new_password) < 4:
+        raise HTTPException(status_code=400, detail="Password must be at least 4 characters.")
+
+    conn   = get_db()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT name FROM users WHERE user_id = %s", (data.target_user_id,))
+    user = fetchone(cursor)
+    if not user:
+        cursor.close(); release_db(conn)
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    hashed = get_password_hash(data.new_password)
+    cursor.execute("UPDATE users SET password = %s WHERE user_id = %s", (hashed, data.target_user_id))
+    cursor.execute(
+        "INSERT INTO notifications (user_id, message) VALUES (%s, %s)",
+        (data.target_user_id, "🔑 Manager has reset your password. Check with manager for your new password.")
+    )
+    conn.commit()
+    cursor.close(); release_db(conn)
+    logger.info(f"Admin reset password for user: {user['name']}")
+    return {"message": f"Password for {user['name']} has been reset successfully."}
