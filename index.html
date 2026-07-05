@@ -1901,19 +1901,17 @@
         btn.textContent = nav.classList.contains('open') ? '✕' : '☰';
     }
 
-    // Close nav when a button is clicked on mobile
-    (function() {
-        var navLinks = document.getElementById('nav-links-container');
-        if (navLinks) {
-            navLinks.addEventListener('click', function(e) {
-                if (e.target.classList.contains('nav-btn')) {
-                    navLinks.classList.remove('open');
-                    var hb = document.getElementById('hamburger-btn');
-                    if (hb) hb.textContent = '☰';
-                }
-            });
-        }
-    })();
+    // Close nav when a button is clicked on mobile - safe version
+    window.addEventListener('DOMContentLoaded', function() {
+        var nl = document.getElementById('nav-links-container');
+        if (nl) nl.addEventListener('click', function(e) {
+            if (e.target.classList.contains('nav-btn')) {
+                nl.classList.remove('open');
+                var hb = document.getElementById('hamburger-btn');
+                if (hb) hb.textContent = '☰';
+            }
+        });
+    });
 
     // ── LOG MATCH — LIVE UPDATES ───────────────────────────────────────
     function updateMultiplierBadge() {
@@ -1956,7 +1954,7 @@
     // Close notifications on outside click
     document.addEventListener('click', function(e) {
         var bell = document.getElementById('notif-bell-btn');
-        var dd   = document.getElementById('notif-dropdown');
+        var dd = document.getElementById('notif-dropdown');
         if (bell && dd && !bell.contains(e.target) && !dd.contains(e.target)) {
             dd.classList.remove('open');
         }
@@ -2027,54 +2025,59 @@
     }
 
     async function handleAuth() {
-        const name     = document.getElementById('auth-name').value.trim();
-        const password = document.getElementById('auth-pass').value;
+        var name     = document.getElementById('auth-name').value.trim();
+        var password = document.getElementById('auth-pass').value;
         if (!name || !password) { showToast('Fill in all fields', 'error'); return; }
 
-        // Show loading state
-        const btn = document.getElementById('auth-btn');
-        const originalText = btn.textContent;
-        btn.textContent = 'LOADING...';
+        var btn = document.getElementById('auth-btn');
+        var orig = btn.textContent;
+        btn.textContent = 'CONNECTING...';
         btn.disabled = true;
+        btn.style.opacity = '0.7';
 
-        const endpoint = isLoginMode ? '/api/login' : '/api/register';
+        var endpoint = isLoginMode ? '/api/login' : '/api/register';
         try {
-            const res    = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, password }) });
-            const result = await res.json();
+            var res    = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, password: password }) });
+            var result = await res.json();
 
             if (result.status === 'success') {
                 if (isLoginMode) {
+                    btn.textContent = 'SUCCESS! ✅';
                     localStorage.setItem('rpcf_token',   result.token);
                     localStorage.setItem('rpcf_user_id', result.user_id);
                     localStorage.setItem('rpcf_name',    result.name);
                     localStorage.setItem('rpcf_role',    result.role);
-                    btn.textContent = '✅ SUCCESS!';
                     initializeApp();
                 } else {
                     showToast(result.message, 'success');
                     toggleAuthMode();
-                    btn.textContent = originalText;
+                    btn.textContent = orig;
                     btn.disabled = false;
+                    btn.style.opacity = '1';
                 }
             } else {
-                showToast(result.message, 'error');
-                btn.textContent = originalText;
+                showToast(result.message || 'Login failed', 'error');
+                btn.textContent = orig;
                 btn.disabled = false;
+                btn.style.opacity = '1';
             }
         } catch (e) {
-            showToast('Connection error — is the server running?', 'error');
-            btn.textContent = originalText;
+            showToast('Server error — please wait 30 seconds and try again (Render free tier wakes up slowly)', 'error');
+            btn.textContent = orig;
             btn.disabled = false;
+            btn.style.opacity = '1';
         }
     }
 
-    // Allow Enter key on auth
-    (function() {
-        var authPass = document.getElementById('auth-pass');
-        var authName = document.getElementById('auth-name');
-        if (authPass) authPass.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAuth(); });
-        if (authName) authName.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAuth(); });
-    })();
+    // Allow Enter key on auth - safe version
+    window.addEventListener('DOMContentLoaded', function() {
+        var ap = document.getElementById('auth-pass');
+        var an = document.getElementById('auth-name');
+        if (ap) ap.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAuth(); });
+        if (an) an.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAuth(); });
+        var pm = document.getElementById('player-modal');
+        if (pm) pm.addEventListener('click', function(e) { if (e.target === pm) closeModal(); });
+    });
 
     function logout() { localStorage.clear(); window.location.reload(); }
 
@@ -2236,7 +2239,7 @@
         }
 
         history.forEach(m => {
-            tbody.innerHTML += `<tr style='cursor:pointer;' onclick='viewPlayerPublicProfile(${p.user_id})'>
+            tbody.innerHTML += `<tr>
                 <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.85rem;">${m.date_logged}</td>
                 <td><span class="match-pill ${m.match_type}">${m.match_type}</span></td>
                 <td style="font-weight:700;">${m.goals}</td>
@@ -2528,11 +2531,7 @@
         document.getElementById('player-modal').classList.remove('active');
     }
 
-    // Close modal on overlay click
-    (function() {
-        var pm = document.getElementById('player-modal');
-        if (pm) pm.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-    })();
+    // player-modal close handled in DOMContentLoaded above
 
     // ── FORGOT PASSWORD ────────────────────────────────────────────────
     function showForgotPassword() {
@@ -2564,34 +2563,36 @@
     // ── PUBLIC PLAYER PROFILE VIEWER (Players viewing others) ─────────
     async function viewPlayerPublicProfile(userId) {
         if (!userId) return;
-        const res = await fetch(\`/api/player_public/\${userId}\`);
-        if (!res.ok) { showToast('Could not load player profile', 'error'); return; }
-        const p = await res.json();
-        document.getElementById('player-modal').classList.add('active');
-        document.getElementById('modal-avatar').src    = p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
-        document.getElementById('modal-name').textContent     = p.name;
-        document.getElementById('modal-position').textContent = p.position || 'N/A';
-        document.getElementById('modal-age').textContent      = \`Age: \${p.age || '--'}\`;
-        document.getElementById('modal-foot').textContent     = \`Foot: \${p.preferred_foot ? p.preferred_foot.charAt(0) : '-'}\`;
-        document.getElementById('modal-bio').textContent      = \`"\${p.bio}"\`;
-        document.getElementById('modal-matches').textContent  = p.total_matches || 0;
-        document.getElementById('modal-goals').textContent    = p.total_goals || 0;
-        document.getElementById('modal-assists').textContent  = p.total_assists || 0;
-        document.getElementById('modal-rating').textContent   = p.avg_rating || '0.0';
-        const histBody = document.getElementById('modal-history-body');
-        histBody.innerHTML = '';
-        if (!p.history || !p.history.length) {
-            histBody.innerHTML = \`<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>\`;
-        } else {
-            p.history.forEach(m => {
-                histBody.innerHTML += \`<tr>
-                    <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.8rem;">\${m.date_logged}</td>
-                    <td><span class="match-pill \${m.match_type}">\${m.match_type}</span></td>
-                    <td>\${m.goals}</td><td>\${m.assists}</td>
-                    <td style="color:var(--red); font-weight:700;">\${m.manager_rating.toFixed(1)}</td>
-                </tr>\`;
-            });
-        }
+        try {
+            var res = await fetch('/api/player_public/' + userId);
+            if (!res.ok) { showToast('Could not load player profile', 'error'); return; }
+            var p = await res.json();
+            document.getElementById('player-modal').classList.add('active');
+            document.getElementById('modal-avatar').src           = p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
+            document.getElementById('modal-name').textContent     = p.name;
+            document.getElementById('modal-position').textContent = p.position || 'N/A';
+            document.getElementById('modal-age').textContent      = 'Age: ' + (p.age || '--');
+            document.getElementById('modal-foot').textContent     = 'Foot: ' + (p.preferred_foot ? p.preferred_foot.charAt(0) : '-');
+            document.getElementById('modal-bio').textContent      = '"' + (p.bio || '') + '"';
+            document.getElementById('modal-matches').textContent  = p.total_matches || 0;
+            document.getElementById('modal-goals').textContent    = p.total_goals || 0;
+            document.getElementById('modal-assists').textContent  = p.total_assists || 0;
+            document.getElementById('modal-rating').textContent   = p.avg_rating || '0.0';
+            var histBody = document.getElementById('modal-history-body');
+            histBody.innerHTML = '';
+            if (!p.history || !p.history.length) {
+                histBody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>';
+            } else {
+                p.history.forEach(function(m) {
+                    histBody.innerHTML += '<tr>' +
+                        '<td style="font-family:'Share Tech Mono',monospace;color:var(--gold);font-size:0.8rem;">' + m.date_logged + '</td>' +
+                        '<td><span class="match-pill ' + m.match_type + '">' + m.match_type + '</span></td>' +
+                        '<td>' + m.goals + '</td><td>' + m.assists + '</td>' +
+                        '<td style="color:var(--red);font-weight:700;">' + parseFloat(m.manager_rating).toFixed(1) + '</td>' +
+                        '</tr>';
+                });
+            }
+        } catch(e) { showToast('Could not load profile', 'error'); }
     }
 
     // ── PASSWORD RESETS (Manager) ─────────────────────────────────────
