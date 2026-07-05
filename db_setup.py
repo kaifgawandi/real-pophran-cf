@@ -16,38 +16,37 @@ def setup_database():
     # ── USERS ──────────────────────────────────────────────────────────────
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            user_id        SERIAL   PRIMARY KEY,
-            name           TEXT     UNIQUE NOT NULL,
+            user_id        SERIAL  PRIMARY KEY,
+            name           TEXT    UNIQUE NOT NULL,
             password       TEXT,
             role           TEXT,
-            position       TEXT     DEFAULT 'Unassigned',
-            age            INTEGER  DEFAULT 0,
-            jersey_number  INTEGER  DEFAULT 0,
-            bio            TEXT     DEFAULT 'Ready to make history on the pitch.',
-            preferred_foot TEXT     DEFAULT 'Right',
-            profile_pic    TEXT     DEFAULT 'https://cdn-icons-png.flaticon.com/512/166/166258.png',
-            is_banned      BOOLEAN  DEFAULT FALSE
+            position       TEXT    DEFAULT 'Unassigned',
+            age            INTEGER DEFAULT 0,
+            jersey_number  INTEGER DEFAULT 0,
+            bio            TEXT    DEFAULT 'Ready to make history on the pitch.',
+            preferred_foot TEXT    DEFAULT 'Right',
+            profile_pic    TEXT    DEFAULT 'https://cdn-icons-png.flaticon.com/512/166/166258.png'
         )
     """)
-    # Safe upgrades for existing databases
+
+    # Safe column additions for existing databases
     for col, defn in [
         ("jersey_number", "INTEGER DEFAULT 0"),
-        ("is_banned",     "BOOLEAN DEFAULT FALSE"),
     ]:
         cursor.execute(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {col} {defn}")
 
     # ── STATS ───────────────────────────────────────────────────────────────
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS stats (
-            stat_id        SERIAL   PRIMARY KEY,
-            player_id      INTEGER  REFERENCES users(user_id),
+            stat_id        SERIAL  PRIMARY KEY,
+            player_id      INTEGER REFERENCES users(user_id),
             match_type     TEXT,
             goals          INTEGER,
             assists        INTEGER,
-            manager_rating FLOAT    DEFAULT 0.0,
-            total_points   FLOAT    DEFAULT 0.0,
-            status         TEXT     DEFAULT 'Pending',
-            date_logged    DATE     DEFAULT CURRENT_DATE
+            manager_rating FLOAT   DEFAULT 0.0,
+            total_points   FLOAT   DEFAULT 0.0,
+            status         TEXT    DEFAULT 'Pending',
+            date_logged    DATE    DEFAULT CURRENT_DATE
         )
     """)
 
@@ -57,19 +56,8 @@ def setup_database():
             notif_id   SERIAL    PRIMARY KEY,
             user_id    INTEGER   REFERENCES users(user_id),
             message    TEXT,
-            is_read    BOOLEAN   DEFAULT FALSE,
+            is_read    INTEGER   DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-
-    # ── PASSWORD RESET REQUESTS ──────────────────────────────────────────────
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS password_resets (
-            request_id        SERIAL    PRIMARY KEY,
-            user_id           INTEGER   REFERENCES users(user_id),
-            new_password_hash TEXT,
-            status            TEXT      DEFAULT 'Pending',
-            requested_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -81,11 +69,22 @@ def setup_database():
         ON CONFLICT (name) DO NOTHING
     """, ('Kaif', hashed))
 
+
+    # ── PASSWORD RESETS ──────────────────────────────────────────────────────────
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS password_resets (
+            reset_id          SERIAL    PRIMARY KEY,
+            user_id           INTEGER   REFERENCES users(user_id) ON DELETE CASCADE,
+            new_password_hash TEXT      NOT NULL,
+            status            TEXT      DEFAULT 'Pending',
+            requested_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
     conn.commit()
     cursor.close()
     conn.close()
     print("PostgreSQL Database Initialized Successfully!")
-    print("Tables: users, stats, notifications, password_resets")
+    print("Tables: users, stats, notifications")
 
 if __name__ == "__main__":
     setup_database()
