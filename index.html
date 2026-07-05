@@ -2624,12 +2624,12 @@
             var jersey      = u.jersey_number ? '#' + u.jersey_number : '—';
             var pic         = u.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
             var deleteBtn   = u.role !== 'Manager' ?
-                '<button onclick="adminDeleteUser(' + u.user_id + ','' + u.name + '')" style="background:rgba(255,59,92,0.2);color:var(--red);border:1px solid var(--red);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">Delete</button>' : '';
+                '<button onclick="adminDeleteUser(' + u.user_id + ',\''+u.name+'\')" style="background:rgba(255,59,92,0.2);color:var(--red);border:1px solid var(--red);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">Delete</button>' : '';
             var userData = encodeURIComponent(JSON.stringify({user_id:u.user_id,name:u.name,position:u.position,age:u.age,jersey_number:u.jersey_number,role:u.role}));
             tbody.innerHTML +=
                 '<tr style="opacity:' + op + '">' +
                 '<td><div style="display:flex;align-items:center;gap:10px;">' +
-                '<img src="' + pic + '" style="width:30px;height:30px;border-radius:50%;border:1px solid var(--border);object-fit:cover;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'">' +
+                '<img src="' + pic + '" style="width:30px;height:30px;border-radius:50%;border:1px solid var(--border);object-fit:cover;" onerror=\"this.src=\x27https://cdn-icons-png.flaticon.com/512/166/166258.png\x27\">' +
                 '<span style="font-family:Orbitron,sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;">' + u.name + '</span>' +
                 '</div></td>' +
                 '<td style="color:' + roleColor + ';font-size:0.78rem;">' + u.role + '</td>' +
