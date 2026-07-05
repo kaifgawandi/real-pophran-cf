@@ -2533,7 +2533,7 @@
         if (newpass !== confirmpass) { showToast('Passwords do not match!', 'error'); return; }
         if (newpass.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; }
         try {
-            const res    = await fetch('/api/request_password_reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, new_password: newpass }) });
+            const res    = await fetch('/api/forgot_password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, new_password: newpass }) });
             const result = await res.json();
             if (res.ok && result.status === 'success') {
                 showToast(result.message, 'success');
