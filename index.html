@@ -1391,7 +1391,7 @@
 </section>
 
 <!-- FORGOT PASSWORD MODAL -->
-<div class="modal-overlay" id="forgot-modal" style="z-index:500;display:none;">
+<div class="modal-overlay" id="forgot-modal" style="z-index:500;">
     <div class="modal-box" style="max-width:420px;">
         <button class="modal-close" onclick="closeForgotModal()">✕</button>
         <h2 style="font-family:'Orbitron',sans-serif; font-size:1rem; color:var(--red); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">Reset Password</h2>
@@ -1901,16 +1901,12 @@
         btn.textContent = nav.classList.contains('open') ? '✕' : '☰';
     }
 
-    // Close nav when a button is clicked on mobile - safe version
-    window.addEventListener('DOMContentLoaded', function() {
-        var nl = document.getElementById('nav-links-container');
-        if (nl) nl.addEventListener('click', function(e) {
-            if (e.target.classList.contains('nav-btn')) {
-                nl.classList.remove('open');
-                var hb = document.getElementById('hamburger-btn');
-                if (hb) hb.textContent = '☰';
-            }
-        });
+    // Close nav when a button is clicked on mobile
+    document.getElementById('nav-links-container').addEventListener('click', (e) => {
+        if (e.target.classList.contains('nav-btn')) {
+            document.getElementById('nav-links-container').classList.remove('open');
+            document.getElementById('hamburger-btn').textContent = '☰';
+        }
     });
 
     // ── LOG MATCH — LIVE UPDATES ───────────────────────────────────────
@@ -1952,9 +1948,9 @@
     }
 
     // Close notifications on outside click
-    document.addEventListener('click', function(e) {
-        var bell = document.getElementById('notif-bell-btn');
-        var dd = document.getElementById('notif-dropdown');
+    document.addEventListener('click', (e) => {
+        const bell = document.getElementById('notif-bell-btn');
+        const dd   = document.getElementById('notif-dropdown');
         if (bell && dd && !bell.contains(e.target) && !dd.contains(e.target)) {
             dd.classList.remove('open');
         }
@@ -2025,59 +2021,34 @@
     }
 
     async function handleAuth() {
-        var name     = document.getElementById('auth-name').value.trim();
-        var password = document.getElementById('auth-pass').value;
+        const name     = document.getElementById('auth-name').value.trim();
+        const password = document.getElementById('auth-pass').value;
         if (!name || !password) { showToast('Fill in all fields', 'error'); return; }
 
-        var btn = document.getElementById('auth-btn');
-        var orig = btn.textContent;
-        btn.textContent = 'CONNECTING...';
-        btn.disabled = true;
-        btn.style.opacity = '0.7';
-
-        var endpoint = isLoginMode ? '/api/login' : '/api/register';
+        const endpoint = isLoginMode ? '/api/login' : '/api/register';
         try {
-            var res    = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, password: password }) });
-            var result = await res.json();
+            const res    = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, password }) });
+            const result = await res.json();
 
             if (result.status === 'success') {
                 if (isLoginMode) {
-                    btn.textContent = 'SUCCESS! ✅';
                     localStorage.setItem('rpcf_token',   result.token);
                     localStorage.setItem('rpcf_user_id', result.user_id);
                     localStorage.setItem('rpcf_name',    result.name);
                     localStorage.setItem('rpcf_role',    result.role);
                     initializeApp();
-                } else {
-                    showToast(result.message, 'success');
-                    toggleAuthMode();
-                    btn.textContent = orig;
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                }
-            } else {
-                showToast(result.message || 'Login failed', 'error');
-                btn.textContent = orig;
-                btn.disabled = false;
-                btn.style.opacity = '1';
-            }
-        } catch (e) {
-            showToast('Server error — please wait 30 seconds and try again (Render free tier wakes up slowly)', 'error');
-            btn.textContent = orig;
-            btn.disabled = false;
-            btn.style.opacity = '1';
-        }
+                } else { showToast(result.message, 'success'); toggleAuthMode(); }
+            } else { showToast(result.message, 'error'); }
+        } catch (e) { showToast('Connection error. Try again.', 'error'); }
     }
 
-    // Allow Enter key on auth - safe version
-    window.addEventListener('DOMContentLoaded', function() {
+    // Allow Enter key on auth
+    (function() {
         var ap = document.getElementById('auth-pass');
         var an = document.getElementById('auth-name');
-        if (ap) ap.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAuth(); });
-        if (an) an.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAuth(); });
-        var pm = document.getElementById('player-modal');
-        if (pm) pm.addEventListener('click', function(e) { if (e.target === pm) closeModal(); });
-    });
+        if(ap) ap.addEventListener('keydown', function(e){if(e.key==='Enter')handleAuth();});
+        if(an) an.addEventListener('keydown', function(e){if(e.key==='Enter')handleAuth();});
+    })();
 
     function logout() { localStorage.clear(); window.location.reload(); }
 
@@ -2239,7 +2210,7 @@
         }
 
         history.forEach(m => {
-            tbody.innerHTML += `<tr>
+            tbody.innerHTML += `<tr style='cursor:pointer;' onclick='viewPlayerPublicProfile(${p.user_id})'>
                 <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.85rem;">${m.date_logged}</td>
                 <td><span class="match-pill ${m.match_type}">${m.match_type}</span></td>
                 <td style="font-weight:700;">${m.goals}</td>
@@ -2531,14 +2502,17 @@
         document.getElementById('player-modal').classList.remove('active');
     }
 
-    // player-modal close handled in DOMContentLoaded above
+    // Close modal on overlay click
+    document.getElementById('player-modal').addEventListener('click', function (e) {
+        if (e.target === this) closeModal();
+    });
 
     // ── FORGOT PASSWORD ────────────────────────────────────────────────
     function showForgotPassword() {
-        document.getElementById('forgot-modal').style.display='flex';
+        document.getElementById('forgot-modal').classList.add('active');
     }
     function closeForgotModal() {
-        document.getElementById('forgot-modal').style.display='none';
+        document.getElementById('forgot-modal').classList.remove('active');
         document.getElementById('reset-name').value = '';
         document.getElementById('reset-newpass').value = '';
         document.getElementById('reset-confirmpass').value = '';
@@ -2563,63 +2537,65 @@
     // ── PUBLIC PLAYER PROFILE VIEWER (Players viewing others) ─────────
     async function viewPlayerPublicProfile(userId) {
         if (!userId) return;
-        try {
-            var res = await fetch('/api/player_public/' + userId);
-            if (!res.ok) { showToast('Could not load player profile', 'error'); return; }
-            var p = await res.json();
-            document.getElementById('player-modal').classList.add('active');
-            document.getElementById('modal-avatar').src           = p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
-            document.getElementById('modal-name').textContent     = p.name;
-            document.getElementById('modal-position').textContent = p.position || 'N/A';
-            document.getElementById('modal-age').textContent      = 'Age: ' + (p.age || '--');
-            document.getElementById('modal-foot').textContent     = 'Foot: ' + (p.preferred_foot ? p.preferred_foot.charAt(0) : '-');
-            document.getElementById('modal-bio').textContent      = '"' + (p.bio || '') + '"';
-            document.getElementById('modal-matches').textContent  = p.total_matches || 0;
-            document.getElementById('modal-goals').textContent    = p.total_goals || 0;
-            document.getElementById('modal-assists').textContent  = p.total_assists || 0;
-            document.getElementById('modal-rating').textContent   = p.avg_rating || '0.0';
-            var histBody = document.getElementById('modal-history-body');
-            histBody.innerHTML = '';
-            if (!p.history || !p.history.length) {
-                histBody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>';
-            } else {
-                p.history.forEach(function(m) {
-                    histBody.innerHTML += '<tr>' +
-                        '<td style="font-family:'Share Tech Mono',monospace;color:var(--gold);font-size:0.8rem;">' + m.date_logged + '</td>' +
-                        '<td><span class="match-pill ' + m.match_type + '">' + m.match_type + '</span></td>' +
-                        '<td>' + m.goals + '</td><td>' + m.assists + '</td>' +
-                        '<td style="color:var(--red);font-weight:700;">' + parseFloat(m.manager_rating).toFixed(1) + '</td>' +
-                        '</tr>';
-                });
-            }
-        } catch(e) { showToast('Could not load profile', 'error'); }
+        var res, p;
+        try { res = await fetch('/api/player_public/' + userId); }
+        catch(e) { showToast('Connection error', 'error'); return; }
+        if (!res.ok) { showToast('Could not load player profile', 'error'); return; }
+        try { p = await res.json(); }
+        catch(e) { showToast('Data error', 'error'); return; }
+        document.getElementById('player-modal').classList.add('active');
+        document.getElementById('modal-avatar').src           = p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
+        document.getElementById('modal-name').textContent     = p.name || '';
+        document.getElementById('modal-position').textContent = p.position || 'N/A';
+        document.getElementById('modal-age').textContent      = 'Age: ' + (p.age || '--');
+        document.getElementById('modal-foot').textContent     = 'Foot: ' + (p.preferred_foot ? p.preferred_foot.charAt(0) : '-');
+        document.getElementById('modal-bio').textContent      = '"' + (p.bio || '') + '"';
+        document.getElementById('modal-matches').textContent  = p.total_matches || 0;
+        document.getElementById('modal-goals').textContent    = p.total_goals || 0;
+        document.getElementById('modal-assists').textContent  = p.total_assists || 0;
+        document.getElementById('modal-rating').textContent   = p.avg_rating || '0.0';
+        var histBody = document.getElementById('modal-history-body');
+        histBody.innerHTML = '';
+        if (!p.history || !p.history.length) {
+            histBody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>';
+        } else {
+            p.history.forEach(function(m) {
+                var pill = '<span class="match-pill ' + m.match_type + '">' + m.match_type + '</span>';
+                var rating = m.manager_rating ? parseFloat(m.manager_rating).toFixed(1) : '0.0';
+                histBody.innerHTML +=
+                    '<tr>' +
+                    '<td style="color:var(--gold);font-size:0.8rem;">' + (m.date_logged || '') + '</td>' +
+                    '<td>' + pill + '</td>' +
+                    '<td>' + (m.goals || 0) + '</td>' +
+                    '<td>' + (m.assists || 0) + '</td>' +
+                    '<td style="color:var(--red);font-weight:700;">' + rating + '</td>' +
+                    '</tr>';
+            });
+        }
     }
 
     // ── PASSWORD RESETS (Manager) ─────────────────────────────────────
     async function loadPasswordResets() {
-        const resets = await (await fetch('/api/pending_resets')).json();
-        const tbody  = document.getElementById('reset-body');
+        var resets = await (await fetch('/api/pending_resets')).json();
+        var tbody  = document.getElementById('reset-body');
         tbody.innerHTML = '';
         if (!resets.length) {
-            tbody.innerHTML = `<tr><td colspan="3" style="color:var(--muted);padding:24px;font-family:'Share Tech Mono',monospace;">No pending reset requests.</td></tr>`;
+            tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted);padding:24px;">No pending reset requests.</td></tr>';
             return;
         }
-        resets.forEach(r => {
-            tbody.innerHTML += `<tr>
-                <td>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <img src="${r.profile_pic||'https://cdn-icons-png.flaticon.com/512/166/166258.png'}"
-                            style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);object-fit:cover;"
-                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'" />
-                        <span style="font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;">${r.name}</span>
-                    </div>
-                </td>
-                <td style="font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:0.8rem;">${r.requested_at}</td>
-                <td style="display:flex;gap:8px;justify-content:center;">
-                    <button onclick="handleReset(${r.request_id},'approve')" class="submit-btn gold-btn" style="margin-top:0;padding:7px 14px;width:auto;font-size:0.75rem;">✅ Approve</button>
-                    <button onclick="handleReset(${r.request_id},'reject')" class="reject-btn">❌ Reject</button>
-                </td>
-            </tr>`;
+        resets.forEach(function(r) {
+            var pic = r.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
+            tbody.innerHTML +=
+                '<tr>' +
+                '<td><div style="display:flex;align-items:center;gap:10px;">' +
+                '<img src="' + pic + '" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);object-fit:cover;" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/166/166258.png\'">' +
+                '<span style="font-family:Orbitron,sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;">' + r.name + '</span>' +
+                '</div></td>' +
+                '<td style="color:var(--muted);font-size:0.8rem;">' + (r.requested_at || '') + '</td>' +
+                '<td style="display:flex;gap:8px;justify-content:center;">' +
+                '<button onclick="handleReset(' + r.request_id + ',\'approve\')" class="submit-btn gold-btn" style="margin-top:0;padding:7px 14px;width:auto;font-size:0.75rem;">Approve</button>' +
+                '<button onclick="handleReset(' + r.request_id + ',\'reject\')" class="reject-btn">Reject</button>' +
+                '</td></tr>';
         });
     }
 
@@ -2633,48 +2609,44 @@
 
     // ── ADMIN PANEL ────────────────────────────────────────────────────
     async function loadAdminPanel() {
-        const users = await (await fetch('/api/admin/users')).json();
-        const tbody = document.getElementById('admin-body');
+        var users = await (await fetch('/api/admin/users')).json();
+        var tbody = document.getElementById('admin-body');
         tbody.innerHTML = '';
-        users.forEach(u => {
-            const isBanned = u.is_banned;
-            tbody.innerHTML += `<tr style="opacity:${isBanned?'0.5':'1'}">
-                <td>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <img src="${u.profile_pic||'https://cdn-icons-png.flaticon.com/512/166/166258.png'}"
-                            style="width:30px;height:30px;border-radius:50%;border:1px solid var(--border);object-fit:cover;"
-                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'">
-                        <span style="font-family:'Orbitron',sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;">${u.name}</span>
-                    </div>
-                </td>
-                <td style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:${u.role==='Manager'?'var(--gold)':'var(--muted)'}">${u.role}</td>
-                <td style="font-size:0.85rem;">${u.position||'—'}</td>
-                <td style="font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--red);">${u.jersey_number?'#'+u.jersey_number:'—'}</td>
-                <td>${u.total_matches||0}</td>
-                <td style="color:var(--gold);font-family:'Orbitron',sans-serif;font-weight:700;">${u.total_points}</td>
-                <td><span style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:${isBanned?'var(--red)':'var(--success)'};">${isBanned?'BANNED':'ACTIVE'}</span></td>
-                <td style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-                    <button onclick="openEditModal(${JSON.stringify(u).replace(/"/g,'&quot;')})" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--cyan);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;font-family:'Orbitron',sans-serif;">✏ Edit</button>
-                    <button onclick="adminResetPassword(${u.user_id})" style="background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;font-family:'Orbitron',sans-serif;">🔑 Reset</button>
-                    <button onclick="adminBanUser(${u.user_id},${!isBanned})" style="background:${isBanned?'var(--cyan-dim)':'var(--red-dim)'};color:${isBanned?'var(--cyan)':'var(--red)'};border:1px solid ${isBanned?'var(--cyan)':'var(--red)'};border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;font-family:'Orbitron',sans-serif;">${isBanned?'🔓 Unban':'🚫 Ban'}</button>
-                    ${u.role!=='Manager'?`<button onclick="adminDeleteUser(${u.user_id},'${u.name}')" style="background:rgba(255,59,92,0.2);color:var(--red);border:1px solid var(--red);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;font-family:'Orbitron',sans-serif;">🗑 Delete</button>`:''}
-                </td>
-            </tr>`;
+        users.forEach(function(u) {
+            var isBanned = u.is_banned;
+            var op = isBanned ? '0.5' : '1';
+            var statusColor = isBanned ? 'var(--red)' : 'var(--success)';
+            var statusText  = isBanned ? 'BANNED' : 'ACTIVE';
+            var banLabel    = isBanned ? 'Unban' : 'Ban';
+            var banColor    = isBanned ? 'var(--cyan)' : 'var(--red)';
+            var banBg       = isBanned ? 'var(--cyan-dim)' : 'var(--red-dim)';
+            var roleColor   = u.role === 'Manager' ? 'var(--gold)' : 'var(--muted)';
+            var jersey      = u.jersey_number ? '#' + u.jersey_number : '—';
+            var pic         = u.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
+            var deleteBtn   = u.role !== 'Manager' ?
+                '<button onclick="adminDeleteUser(' + u.user_id + ','' + u.name + '')" style="background:rgba(255,59,92,0.2);color:var(--red);border:1px solid var(--red);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">Delete</button>' : '';
+            var userData = encodeURIComponent(JSON.stringify({user_id:u.user_id,name:u.name,position:u.position,age:u.age,jersey_number:u.jersey_number,role:u.role}));
+            tbody.innerHTML +=
+                '<tr style="opacity:' + op + '">' +
+                '<td><div style="display:flex;align-items:center;gap:10px;">' +
+                '<img src="' + pic + '" style="width:30px;height:30px;border-radius:50%;border:1px solid var(--border);object-fit:cover;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'">' +
+                '<span style="font-family:Orbitron,sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;">' + u.name + '</span>' +
+                '</div></td>' +
+                '<td style="color:' + roleColor + ';font-size:0.78rem;">' + u.role + '</td>' +
+                '<td>' + (u.position || '—') + '</td>' +
+                '<td style="color:var(--red);">' + jersey + '</td>' +
+                '<td>' + (u.total_matches || 0) + '</td>' +
+                '<td style="color:var(--gold);font-weight:700;">' + u.total_points + '</td>' +
+                '<td><span style="font-size:0.72rem;color:' + statusColor + ';">' + statusText + '</span></td>' +
+                '<td style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">' +
+                '<button onclick="openEditModal('' + userData + '')" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--cyan);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">Edit</button>' +
+                '<button onclick="adminResetPassword(' + u.user_id + ')" style="background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">Reset Pwd</button>' +
+                '<button onclick="adminBanUser(' + u.user_id + ',' + !isBanned + ')" style="background:' + banBg + ';color:' + banColor + ';border:1px solid ' + banColor + ';border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;">' + banLabel + '</button>' +
+                deleteBtn +
+                '</td></tr>';
         });
     }
 
-    // Edit user inline — opens a prompt-based quick edit
-    function openEditModal(user) {
-        const newName     = prompt(`Edit name (current: ${user.name}):`, user.name);
-        if (newName === null) return;
-        const newPosition = prompt(`Edit position (current: ${user.position}):`, user.position || 'Unassigned');
-        if (newPosition === null) return;
-        const newAge      = prompt(`Edit age (current: ${user.age}):`, user.age || 0);
-        if (newAge === null) return;
-        const newJersey   = prompt(`Edit jersey number (current: ${user.jersey_number}):`, user.jersey_number || 0);
-        if (newJersey === null) return;
-        adminEditUser(user.user_id, newName.trim(), newPosition.trim(), parseInt(newAge)||0, parseInt(newJersey)||0, user.role);
-    }
 
     async function adminEditUser(userId, name, position, age, jersey, role) {
         const token = localStorage.getItem('rpcf_token');
