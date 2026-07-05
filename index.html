@@ -1391,7 +1391,7 @@
 </section>
 
 <!-- FORGOT PASSWORD MODAL -->
-<div class="modal-overlay" id="forgot-modal" style="z-index:500; display:none;">
+<div class="modal-overlay" id="forgot-modal" style="z-index:500;">
     <div class="modal-box" style="max-width:420px;">
         <button class="modal-close" onclick="closeForgotModal()">✕</button>
         <h2 style="font-family:'Orbitron',sans-serif; font-size:1rem; color:var(--red); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">Reset Password</h2>
@@ -1902,12 +1902,18 @@
     }
 
     // Close nav when a button is clicked on mobile
-    document.getElementById('nav-links-container').addEventListener('click', (e) => {
-        if (e.target.classList.contains('nav-btn')) {
-            document.getElementById('nav-links-container').classList.remove('open');
-            document.getElementById('hamburger-btn').textContent = '☰';
+    (function() {
+        var navLinks = document.getElementById('nav-links-container');
+        if (navLinks) {
+            navLinks.addEventListener('click', function(e) {
+                if (e.target.classList.contains('nav-btn')) {
+                    navLinks.classList.remove('open');
+                    var hb = document.getElementById('hamburger-btn');
+                    if (hb) hb.textContent = '☰';
+                }
+            });
         }
-    });
+    })();
 
     // ── LOG MATCH — LIVE UPDATES ───────────────────────────────────────
     function updateMultiplierBadge() {
@@ -1948,9 +1954,9 @@
     }
 
     // Close notifications on outside click
-    document.addEventListener('click', (e) => {
-        const bell = document.getElementById('notif-bell-btn');
-        const dd   = document.getElementById('notif-dropdown');
+    document.addEventListener('click', function(e) {
+        var bell = document.getElementById('notif-bell-btn');
+        var dd   = document.getElementById('notif-dropdown');
         if (bell && dd && !bell.contains(e.target) && !dd.contains(e.target)) {
             dd.classList.remove('open');
         }
@@ -2025,6 +2031,12 @@
         const password = document.getElementById('auth-pass').value;
         if (!name || !password) { showToast('Fill in all fields', 'error'); return; }
 
+        // Show loading state
+        const btn = document.getElementById('auth-btn');
+        const originalText = btn.textContent;
+        btn.textContent = 'LOADING...';
+        btn.disabled = true;
+
         const endpoint = isLoginMode ? '/api/login' : '/api/register';
         try {
             const res    = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, password }) });
@@ -2036,15 +2048,33 @@
                     localStorage.setItem('rpcf_user_id', result.user_id);
                     localStorage.setItem('rpcf_name',    result.name);
                     localStorage.setItem('rpcf_role',    result.role);
+                    btn.textContent = '✅ SUCCESS!';
                     initializeApp();
-                } else { showToast(result.message, 'success'); toggleAuthMode(); }
-            } else { showToast(result.message, 'error'); }
-        } catch (e) { showToast('Connection error. Try again.', 'error'); }
+                } else {
+                    showToast(result.message, 'success');
+                    toggleAuthMode();
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+            } else {
+                showToast(result.message, 'error');
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        } catch (e) {
+            showToast('Connection error — is the server running?', 'error');
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
     }
 
     // Allow Enter key on auth
-    document.getElementById('auth-pass').addEventListener('keydown', e => { if (e.key === 'Enter') handleAuth(); });
-    document.getElementById('auth-name').addEventListener('keydown', e => { if (e.key === 'Enter') handleAuth(); });
+    (function() {
+        var authPass = document.getElementById('auth-pass');
+        var authName = document.getElementById('auth-name');
+        if (authPass) authPass.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAuth(); });
+        if (authName) authName.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAuth(); });
+    })();
 
     function logout() { localStorage.clear(); window.location.reload(); }
 
@@ -2206,7 +2236,7 @@
         }
 
         history.forEach(m => {
-            tbody.innerHTML += `<tr>
+            tbody.innerHTML += `<tr style='cursor:pointer;' onclick='viewPlayerPublicProfile(${p.user_id})'>
                 <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.85rem;">${m.date_logged}</td>
                 <td><span class="match-pill ${m.match_type}">${m.match_type}</span></td>
                 <td style="font-weight:700;">${m.goals}</td>
@@ -2499,16 +2529,17 @@
     }
 
     // Close modal on overlay click
-    document.getElementById('player-modal').addEventListener('click', function (e) {
-        if (e.target === this) closeModal();
-    });
+    (function() {
+        var pm = document.getElementById('player-modal');
+        if (pm) pm.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+    })();
 
     // ── FORGOT PASSWORD ────────────────────────────────────────────────
     function showForgotPassword() {
-        document.getElementById('forgot-modal').style.display = 'flex';
+        document.getElementById('forgot-modal').classList.add('active');
     }
     function closeForgotModal() {
-        document.getElementById('forgot-modal').style.display = 'none';
+        document.getElementById('forgot-modal').classList.remove('active');
         document.getElementById('reset-name').value = '';
         document.getElementById('reset-newpass').value = '';
         document.getElementById('reset-confirmpass').value = '';
@@ -2533,16 +2564,16 @@
     // ── PUBLIC PLAYER PROFILE VIEWER (Players viewing others) ─────────
     async function viewPlayerPublicProfile(userId) {
         if (!userId) return;
-        const res = await fetch('/api/player_public/' + userId);
+        const res = await fetch(\`/api/player_public/\${userId}\`);
         if (!res.ok) { showToast('Could not load player profile', 'error'); return; }
         const p = await res.json();
         document.getElementById('player-modal').classList.add('active');
-        document.getElementById('modal-avatar').src           = p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
+        document.getElementById('modal-avatar').src    = p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
         document.getElementById('modal-name').textContent     = p.name;
         document.getElementById('modal-position').textContent = p.position || 'N/A';
-        document.getElementById('modal-age').textContent      = 'Age: ' + (p.age || '--');
-        document.getElementById('modal-foot').textContent     = 'Foot: ' + (p.preferred_foot ? p.preferred_foot.charAt(0) : '-');
-        document.getElementById('modal-bio').textContent      = '"' + p.bio + '"';
+        document.getElementById('modal-age').textContent      = \`Age: \${p.age || '--'}\`;
+        document.getElementById('modal-foot').textContent     = \`Foot: \${p.preferred_foot ? p.preferred_foot.charAt(0) : '-'}\`;
+        document.getElementById('modal-bio').textContent      = \`"\${p.bio}"\`;
         document.getElementById('modal-matches').textContent  = p.total_matches || 0;
         document.getElementById('modal-goals').textContent    = p.total_goals || 0;
         document.getElementById('modal-assists').textContent  = p.total_assists || 0;
@@ -2550,15 +2581,15 @@
         const histBody = document.getElementById('modal-history-body');
         histBody.innerHTML = '';
         if (!p.history || !p.history.length) {
-            histBody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>';
+            histBody.innerHTML = \`<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>\`;
         } else {
-            p.history.forEach(function(m) {
-                histBody.innerHTML += '<tr>' +
-                    '<td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.8rem;">' + m.date_logged + '</td>' +
-                    '<td><span class="match-pill ' + m.match_type + '">' + m.match_type + '</span></td>' +
-                    '<td>' + m.goals + '</td><td>' + m.assists + '</td>' +
-                    '<td style="color:var(--red); font-weight:700;">' + parseFloat(m.manager_rating).toFixed(1) + '</td>' +
-                    '</tr>';
+            p.history.forEach(m => {
+                histBody.innerHTML += \`<tr>
+                    <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.8rem;">\${m.date_logged}</td>
+                    <td><span class="match-pill \${m.match_type}">\${m.match_type}</span></td>
+                    <td>\${m.goals}</td><td>\${m.assists}</td>
+                    <td style="color:var(--red); font-weight:700;">\${m.manager_rating.toFixed(1)}</td>
+                </tr>\`;
             });
         }
     }
