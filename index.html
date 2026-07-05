@@ -1391,7 +1391,7 @@
 </section>
 
 <!-- FORGOT PASSWORD MODAL -->
-<div class="modal-overlay" id="forgot-modal" style="z-index:500;">
+<div class="modal-overlay" id="forgot-modal" style="z-index:500;display:none;">
     <div class="modal-box" style="max-width:420px;">
         <button class="modal-close" onclick="closeForgotModal()">✕</button>
         <h2 style="font-family:'Orbitron',sans-serif; font-size:1rem; color:var(--red); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">Reset Password</h2>
@@ -2536,10 +2536,10 @@
 
     // ── FORGOT PASSWORD ────────────────────────────────────────────────
     function showForgotPassword() {
-        document.getElementById('forgot-modal').classList.add('active');
+        document.getElementById('forgot-modal').style.display='flex';
     }
     function closeForgotModal() {
-        document.getElementById('forgot-modal').classList.remove('active');
+        document.getElementById('forgot-modal').style.display='none';
         document.getElementById('reset-name').value = '';
         document.getElementById('reset-newpass').value = '';
         document.getElementById('reset-confirmpass').value = '';
