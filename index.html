@@ -1364,10 +1364,6 @@
         /* ── MANAGER ONLY ── */
         .manager-only { display: none; }
         .player-only { display: inline-block; }
-
-        /* Manager sections hidden by default, shown only when active */
-        section.manager-only { display: none; }
-        section.manager-only.active { display: block; }
     </style>
 </head>
 <body>
@@ -1717,7 +1713,7 @@
         </section>
 
         <!-- ─── MANAGER PORTAL ─── -->
-        <section id="manager-panel" class="page-section manager-panel manager-only">
+        <section id="manager-panel" class="page-section manager-panel">
             <div class="page-header">
                 <h1 style="color:var(--text)">Manager <span style="color:var(--gold)">Control Panel</span></h1>
                 <div class="page-subtext">Review submissions · Assign official ratings</div>
@@ -1769,7 +1765,7 @@
         </section>
 
         <!-- ─── PASSWORD RESET REQUESTS (Manager Only) ─── -->
-        <section id="reset-requests" class="page-section manager-only">
+        <section id="reset-requests" class="page-section manager-only" style="display:none;">
             <div class="page-header">
                 <h1 style="color:var(--text);">Password <span style="color:var(--gold);">Reset Requests</span></h1>
                 <div class="page-subtext">Approve or reject player password reset requests</div>
@@ -1792,7 +1788,7 @@
         </section>
 
         <!-- ─── ADMIN PANEL (Manager Only) ─── -->
-        <section id="admin-panel" class="page-section manager-only">
+        <section id="admin-panel" class="page-section manager-only" style="display:none;">
             <div class="page-header">
                 <h1 style="color:var(--text);">Admin <span style="color:var(--gold);">Panel</span></h1>
                 <div class="page-subtext">View · Edit · Ban · Delete players</div>
@@ -2062,11 +2058,7 @@
 
         if (role === 'Manager') {
             document.querySelectorAll('.player-only').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.manager-only').forEach(el => {
-                // Show nav buttons
-                if (el.tagName === 'BUTTON') el.style.display = 'inline-block';
-                // Sections stay hidden until switchPage activates them
-            });
+            document.querySelectorAll('.manager-only').forEach(el => el.style.display = 'inline-block');
             switchPage('manager-panel', document.querySelector('.manager-nav'));
             loadPendingStats();
             loadManagerSummary();
@@ -2085,21 +2077,17 @@
 
     // ── PAGE SWITCH ────────────────────────────────────────────────────
     function switchPage(pageId, btn) {
-        // Hide ALL sections (remove active from all page-sections)
         document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
-        // Show the target section
-        const target = document.getElementById(pageId);
-        if (target) target.classList.add('active');
+        document.getElementById(pageId).classList.add('active');
         if (btn) btn.classList.add('active');
 
-        if (pageId === 'dashboard')       { loadDashboardSummary(); renderPlayerCharts(); }
-        if (pageId === 'profile-page')    loadProfile();
-        if (pageId === 'history-page')    loadMatchHistory();
-        if (pageId === 'rankings')        loadRankingsAndAwards();
-        if (pageId === 'team-center')     loadGlobalTeamCenter();
-        if (pageId === 'manager-panel')   { loadPendingStats(); loadManagerSummary(); }
+        if (pageId === 'dashboard')    { loadDashboardSummary(); renderPlayerCharts(); }
+        if (pageId === 'profile-page') loadProfile();
+        if (pageId === 'history-page') loadMatchHistory();
+        if (pageId === 'rankings')     loadRankingsAndAwards();
+        if (pageId === 'team-center')  loadGlobalTeamCenter();
+        if (pageId === 'manager-panel') { loadPendingStats(); loadManagerSummary(); }
         if (pageId === 'squad-roster')    loadSquadRoster();
         if (pageId === 'reset-requests')  loadPasswordResets();
         if (pageId === 'admin-panel')     loadAdminPanel();
@@ -2218,7 +2206,7 @@
         }
 
         history.forEach(m => {
-            tbody.innerHTML += `<tr style='cursor:pointer;' onclick='viewPlayerPublicProfile(${p.user_id})'>
+            tbody.innerHTML += `<tr>
                 <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.85rem;">${m.date_logged}</td>
                 <td><span class="match-pill ${m.match_type}">${m.match_type}</span></td>
                 <td style="font-weight:700;">${m.goals}</td>
@@ -2533,7 +2521,7 @@
         if (newpass !== confirmpass) { showToast('Passwords do not match!', 'error'); return; }
         if (newpass.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; }
         try {
-            const res    = await fetch('/api/forgot_password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, new_password: newpass }) });
+            const res    = await fetch('/api/request_password_reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, new_password: newpass }) });
             const result = await res.json();
             if (res.ok && result.status === 'success') {
                 showToast(result.message, 'success');
