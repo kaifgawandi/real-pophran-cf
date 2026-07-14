@@ -7,6 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* ── ELITE CABINET ADAPTATION & HEATMAP ── */
+        .awards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+        .award-card { background: var(--surface); border: 1px solid rgba(245,197,24,0.2); border-radius: 12px; padding: 20px; text-align: center; }
+        .award-icon { font-size: 2rem; margin-bottom: 6px; text-shadow: 0 0 10px var(--gold); }
+        .award-label { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+        .award-name { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900; color: var(--text); margin-top: 4px; }
+        
+        /* Tactical Field Canvas Setup */
+        .pitch-heatmap-container { margin: 20px 0; background: #0c1a10; border: 2px solid #1e4626; border-radius: 8px; padding: 12px; text-align: center; position: relative; }
+        .pitch-field { width: 100%; height: 160px; border: 2px dashed rgba(255,255,255,0.2); position: relative; overflow: hidden; }
+        .pitch-center-circle { width: 50px; height: 50px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .pitch-half-line { width: 100%; height: 2px; background: rgba(255,255,255,0.2); position: absolute; top: 50%; left: 0; }
+        .glow-zone { position: absolute; width: 45px; height: 45px; background: radial-gradient(circle, rgba(255,59,92,0.8) 0%, rgba(255,197,24,0.4) 40%, transparent 70%); border-radius: 50%; transform: translate(-50%, -50%); filter: blur(4px); animation: pulse-heat 2s ease-in-out infinite; }
+        @keyframes pulse-heat { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; } 50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } }
         :root {
             --bg:       #080d14;
             --surface:  #0d1520;
@@ -1568,12 +1582,15 @@
                     <div class="award-name" id="award-scorer">—</div>
                     <div class="award-val" id="award-scorer-val">0 Goals</div>
                 </div>
-                <div class="award-card">
-                    <div class="award-icon">🎯</div>
-                    <div class="award-label">Top Assister</div>
-                    <div class="award-name" id="award-assister">—</div>
-                    <div class="award-val" id="award-assister-val">0 Assists</div>
-                </div>
+            <h2 style="font-family:'Orbitron',sans-serif; font-size:0.9rem; text-align:center; color:var(--gold); letter-spacing:3px; margin-bottom:14px; text-transform:uppercase;">🏆 Elite Trophy Room</h2>
+            <div class="awards-grid">
+                <div class="award-card"><div class="award-icon">👑</div><div class="award-label">Player of Month</div><div class="award-name" id="award-potm">Loading...</div></div>
+                <div class="award-card"><div class="award-icon">🥾</div><div class="award-label">Golden Boot</div><div class="award-name" id="award-boot">Loading...</div></div>
+                <div class="award-card"><div class="award-icon">🎯</div><div class="award-label">Most Assists</div><div class="award-name" id="award-assists">Loading...</div></div>
+                <div class="award-card"><div class="award-icon">🧤</div><div class="award-label">Golden Gloves</div><div class="award-name" id="award-gloves">Loading...</div></div>
+                <div class="award-card"><div class="award-icon">🛡️</div><div class="award-label">Best Defender</div><div class="award-name" id="award-defender">Loading...</div></div>
+                <div class="award-card"><div class="award-icon">👶</div><div class="award-label">Best Young Player</div><div class="award-name" id="award-young">Loading...</div></div>
+            </div>
                 <div class="award-card">
                     <div class="award-icon">⭐</div>
                     <div class="award-label">Best Rated</div>
@@ -1847,6 +1864,14 @@
 
         <div class="modal-bio" id="modal-bio">"Ready to make history on the pitch."</div>
 
+        <h3 style="font-family:'Orbitron',sans-serif; font-size:0.75rem; color:var(--muted); letter-spacing:1px; margin-top:14px;">📍 POSITION FIELD HEAT MAP</h3>
+        <div class="pitch-heatmap-container">
+            <div class="pitch-field">
+                <div class="pitch-half-line"></div><div class="pitch-center-circle"></div>
+                <div class="glow-zone" id="pitch-glow"></div>
+            </div>
+        </div>
+        
         <div class="modal-stats-row">
             <div class="modal-stat">
                 <div class="modal-stat-val" id="modal-matches">0</div>
@@ -2265,15 +2290,15 @@
             tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted); padding:24px; font-family:'Share Tech Mono',monospace; text-align:center;">No squad data yet.</td></tr>`;
         }
 
-        document.getElementById('award-scorer').textContent     = topScorer.name;
-        document.getElementById('award-scorer-val').textContent = `${topScorer.val} Goals`;
-        document.getElementById('award-assister').textContent   = topAssister.name;
-        document.getElementById('award-assister-val').textContent = `${topAssister.val} Assists`;
-        document.getElementById('award-rated').textContent      = bestRated.name;
-        document.getElementById('award-rated-val').textContent  = `${bestRated.val.toFixed(1)} Avg Rating`;
-        document.getElementById('award-improved').textContent   = highImproved.name;
-        document.getElementById('award-improved-val').textContent = 'Trending Up 📈';
-
+        // Pull Cloud Awards Cabinet data
+        const aRes = await fetch('/api/awards/cabinet'); 
+        const a = await aRes.json();
+        document.getElementById('award-potm').textContent = a.potm;
+        document.getElementById('award-boot').textContent = a.boot;
+        document.getElementById('award-assists').textContent = a.assists;
+        document.getElementById('award-defender').textContent = a.defender;
+        document.getElementById('award-gloves').textContent = a.gloves;
+        document.getElementById('award-young').textContent = a.young;
         const mvpEl = document.getElementById('team-mvp-card');
         if (mvpEl && rankings.length) mvpEl.textContent = rankings[0].name || '—';
     }
@@ -2447,6 +2472,20 @@
         }
     }
 
+    function setPitchGlowZone(position) {
+        const glow = document.getElementById('pitch-glow');
+        if (!glow) return;
+        const coordinates = {
+            'ST': {top:'15%', left:'50%'}, 'LW': {top:'22%', left:'20%'}, 'RW': {top:'22%', left:'80%'},
+            'CAM': {top:'40%', left:'50%'}, 'CM': {top:'55%', left:'50%'}, 'CDM': {top:'68%', left:'50%'},
+            'CB': {top:'82%', left:'50%'}, 'LB': {top:'80%', left:'18%'}, 'RB': {top:'80%', left:'82%'},
+            'GK': {top:'94%', left:'50%'}, 'Unassigned': {top:'50%', left:'50%'}
+        };
+        const pos = coordinates[position] || coordinates['Unassigned'];
+        glow.style.top = pos.top; glow.style.left = pos.left;
+    }
+    
+  
     async function openPlayerModal(userId) {
         if (!userId) return;
         document.getElementById('player-modal').classList.add('active');
