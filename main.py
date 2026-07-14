@@ -365,6 +365,45 @@ async def get_match_history(player_id: int):
         if row.get("date_logged"):
             row["date_logged"] = str(row["date_logged"])
     return history
+# ── AUTOMATED AWARDS ENGINE ─────────────────────────────────────────────
+@app.get("/api/awards/cabinet")
+async def get_awards_cabinet():
+    conn = get_db()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    # 1. Golden Boot
+    cursor.execute("SELECT u.name, SUM(s.goals) as value FROM users u JOIN stats s ON u.user_id=s.player_id WHERE s.status='Rated' GROUP BY u.name ORDER BY value DESC LIMIT 1")
+    boot = fetchone(cursor)
+    
+    # 2. Most Assists
+    cursor.execute("SELECT u.name, SUM(s.assists) as value FROM users u JOIN stats s ON u.user_id=s.player_id WHERE s.status='Rated' GROUP BY u.name ORDER BY value DESC LIMIT 1")
+    assists = fetchone(cursor)
+    
+    # 3. Best Defender
+    cursor.execute("SELECT u.name, AVG(s.manager_rating) as value FROM users u JOIN stats s ON u.user_id=s.player_id WHERE s.status='Rated' AND u.position IN ('CB','LB','RB') GROUP BY u.name ORDER BY value DESC LIMIT 1")
+    defender = fetchone(cursor)
+    
+    # 4. Golden Gloves
+    cursor.execute("SELECT u.name, AVG(s.manager_rating) as value FROM users u JOIN stats s ON u.user_id=s.player_id WHERE s.status='Rated' AND u.position='GK' GROUP BY u.name ORDER BY value DESC LIMIT 1")
+    gloves = fetchone(cursor)
+    
+    # 5. Best Young Player (Age <= 19)
+    cursor.execute("SELECT u.name, SUM(s.total_points) as value FROM users u JOIN stats s ON u.user_id=s.player_id WHERE s.status='Rated' AND u.age <= 19 AND u.age > 0 GROUP BY u.name ORDER BY value DESC LIMIT 1")
+    young = fetchone(cursor)
+    
+    # 6. Player of the Month (Highest points)
+    cursor.execute("SELECT u.name, SUM(s.total_points) as value FROM users u JOIN stats s ON u.user_id=s.player_id WHERE s.status='Rated' GROUP BY u.name ORDER BY value DESC LIMIT 1")
+    potm = fetchone(cursor)
+    
+    cursor.close(); release_db(conn)
+    return {
+        "potm": potm["name"] if potm else "TBD",
+        "boot": f"{boot['name']} ({boot['value']} G)" if boot else "TBD",
+        "assists": f"{assists['name']} ({assists['value']} A)" if assists else "TBD",
+        "defender": f"{defender['name']} ({round(defender['value'],1)} Rtg)" if defender else "TBD",
+        "gloves": f"{gloves['name']} ({round(gloves['value'],1)} Rtg)" if gloves else "TBD",
+        "young": young["name"] if young else "TBD"
+    }
 
 # ── RANKINGS ──────────────────────────────────────────────────────────────────
 @app.get("/api/rankings")
