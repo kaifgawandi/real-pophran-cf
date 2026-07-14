@@ -79,6 +79,16 @@ def setup_database():
             status            TEXT      DEFAULT 'Pending',
             requested_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
+        
+    # Add this right above conn.commit()
+    # ── AWARDS TABLE ──────────────────────────────────────────────────────────
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS awards (
+            award_id   SERIAL    PRIMARY KEY,
+            user_id    INTEGER   REFERENCES users(user_id) ON DELETE CASCADE,
+            award_type TEXT      NOT NULL,
+            date_gained DATE      DEFAULT CURRENT_DATE
+        )
     """)
     conn.commit()
     cursor.close()
