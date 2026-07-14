@@ -1582,7 +1582,7 @@
                     <div class="award-name" id="award-scorer">—</div>
                     <div class="award-val" id="award-scorer-val">0 Goals</div>
                 </div>
-            <h2 style="font-family:'Orbitron',sans-serif; font-size:0.9rem; text-align:center; color:var(--gold); letter-spacing:3px; margin-bottom:14px; text-transform:uppercase;">🏆 Elite Trophy Room</h2>
+           <h2 style="font-family:'Orbitron',sans-serif; font-size:0.9rem; text-align:center; color:var(--gold); letter-spacing:3px; margin-bottom:14px; text-transform:uppercase;">🏆 Elite Trophy Room</h2>
             <div class="awards-grid">
                 <div class="award-card"><div class="award-icon">👑</div><div class="award-label">Player of Month</div><div class="award-name" id="award-potm">Loading...</div></div>
                 <div class="award-card"><div class="award-icon">🥾</div><div class="award-label">Golden Boot</div><div class="award-name" id="award-boot">Loading...</div></div>
@@ -1590,19 +1590,6 @@
                 <div class="award-card"><div class="award-icon">🧤</div><div class="award-label">Golden Gloves</div><div class="award-name" id="award-gloves">Loading...</div></div>
                 <div class="award-card"><div class="award-icon">🛡️</div><div class="award-label">Best Defender</div><div class="award-name" id="award-defender">Loading...</div></div>
                 <div class="award-card"><div class="award-icon">👶</div><div class="award-label">Best Young Player</div><div class="award-name" id="award-young">Loading...</div></div>
-            </div>
-                <div class="award-card">
-                    <div class="award-icon">⭐</div>
-                    <div class="award-label">Best Rated</div>
-                    <div class="award-name" id="award-rated">—</div>
-                    <div class="award-val" id="award-rated-val">0.0 Avg</div>
-                </div>
-                <div class="award-card">
-                    <div class="award-icon">📈</div>
-                    <div class="award-label">Most Improved</div>
-                    <div class="award-name" id="award-improved">—</div>
-                    <div class="award-val" id="award-improved-val">Trending Up</div>
-                </div>
             </div>
             <div class="table-wrap">
                 <div class="table-responsive">
@@ -2473,7 +2460,8 @@
     }
 
     function setPitchGlowZone(position) {
-        const glow = document.getElementById('pitch-glow');
+        document.getElementById('modal-bio').textContent      = `"${p.bio}"`;
+        setPitchGlowZone(p.position);
         if (!glow) return;
         const coordinates = {
             'ST': {top:'15%', left:'50%'}, 'LW': {top:'22%', left:'20%'}, 'RW': {top:'22%', left:'80%'},
