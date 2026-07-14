@@ -69,6 +69,7 @@ def setup_database():
         ON CONFLICT (name) DO NOTHING
     """, ('Kaif', hashed))
 
+
     # ── PASSWORD RESETS ──────────────────────────────────────────────────────────
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS password_resets (
@@ -79,21 +80,11 @@ def setup_database():
             requested_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
-    # ── AWARDS TABLE (NEW) ──────────────────────────────────────────────────────
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS awards (
-            award_id   SERIAL    PRIMARY KEY,
-            user_id    INTEGER   REFERENCES users(user_id) ON DELETE CASCADE,
-            award_type TEXT      NOT NULL,
-            date_gained DATE      DEFAULT CURRENT_DATE
-        )
-    """)
-
     conn.commit()
     cursor.close()
     conn.close()
-    print("PostgreSQL Database Initialized Successfully with Awards Matrix!")
+    print("PostgreSQL Database Initialized Successfully!")
+    print("Tables: users, stats, notifications")
 
 if __name__ == "__main__":
     setup_database()
