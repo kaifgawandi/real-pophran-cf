@@ -2460,8 +2460,8 @@
     }
 
     function setPitchGlowZone(position) {
-        document.getElementById('modal-bio').textContent      = `"${p.bio}"`;
-        setPitchGlowZone(p.position);
+    function setPitchGlowZone(position) {
+        const glow = document.getElementById('pitch-glow');
         if (!glow) return;
         const coordinates = {
             'ST': {top:'15%', left:'50%'}, 'LW': {top:'22%', left:'20%'}, 'RW': {top:'22%', left:'80%'},
@@ -2488,6 +2488,8 @@
             document.getElementById('modal-age').textContent      = `Age: ${p.age || '--'}`;
             document.getElementById('modal-foot').textContent     = `Foot: ${p.preferred_foot ? p.preferred_foot.charAt(0) : '-'}`;
             document.getElementById('modal-bio').textContent      = `"${p.bio}"`;
+            // ADD THIS LINE HERE TO MAKE THE HEATMAP WORK:
+            setPitchGlowZone(p.position);
         }
 
         // Load dashboard stats
