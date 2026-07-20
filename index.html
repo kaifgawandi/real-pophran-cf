@@ -22,9 +22,7 @@
             --muted:    #5a7a99;
             --success:  #00e5a0;
         }
-
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
             font-family: 'Rajdhani', sans-serif;
             background: var(--bg);
@@ -32,1349 +30,456 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-
-        /* ── SCANLINE OVERLAY ── */
         body::after {
             content: '';
             position: fixed;
             inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,0,0,0.03) 2px,
-                rgba(0,0,0,0.03) 4px
-            );
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
             pointer-events: none;
             z-index: 9999;
         }
-
-        /* ── AUTH SCREEN ── */
         #auth-section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            background:
-                radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,59,92,0.08) 0%, transparent 70%),
-                radial-gradient(ellipse 40% 40% at 80% 80%, rgba(0,212,255,0.05) 0%, transparent 60%),
-                var(--bg);
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+            background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,59,92,0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 80% 80%, rgba(0,212,255,0.05) 0%, transparent 60%), var(--bg);
         }
-
         .auth-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 48px 40px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            position: relative;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+            padding: 48px 40px; width: 100%; max-width: 400px; text-align: center; position: relative;
             box-shadow: 0 0 60px rgba(255,59,92,0.08), 0 0 120px rgba(0,212,255,0.04);
         }
-
         .auth-box::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: 17px;
+            content: ''; position: absolute; inset: -1px; border-radius: 17px;
             background: linear-gradient(135deg, var(--red), transparent 40%, var(--cyan) 100%);
-            z-index: -1;
-            opacity: 0.4;
+            z-index: -1; opacity: 0.4;
         }
-
         .auth-logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 900;
-            letter-spacing: 4px;
-            background: linear-gradient(90deg, var(--red), var(--gold), var(--red));
-            background-size: 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 3s linear infinite;
-            margin-bottom: 4px;
+            font-family: 'Orbitron', sans-serif; font-size: 2.8rem; font-weight: 900; letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--red), var(--gold), var(--red)); background-size: 200%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite; margin-bottom: 4px;
         }
-
         .auth-tagline {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--muted);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 36px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--muted);
+            letter-spacing: 3px; text-transform: uppercase; margin-bottom: 36px;
         }
-
         @keyframes shine { to { background-position: 200% center; } }
-
         .auth-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1rem;
-            color: var(--red);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 28px;
+            font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--red);
+            letter-spacing: 3px; text-transform: uppercase; margin-bottom: 28px;
         }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
+        .input-group { position: relative; margin-bottom: 16px; text-align: left; }
         .input-group label {
-            display: block;
-            font-size: 0.8rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-            font-family: 'Share Tech Mono', monospace;
+            display: block; font-size: 0.8rem; color: var(--muted); letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 6px; font-family: 'Share Tech Mono', monospace;
         }
-
         .input-group input {
-            width: 100%;
-            padding: 13px 16px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
+            width: 100%; padding: 13px 16px; background: var(--panel); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s; outline: none;
         }
-
-        .input-group input:focus {
-            border-color: var(--red);
-            box-shadow: 0 0 0 3px var(--red-dim);
-        }
-
+        .input-group input:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-dim); }
         .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--red), #c0392b);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: transform 0.15s, box-shadow 0.2s;
-            position: relative;
-            overflow: hidden;
+            width: 100%; padding: 14px; background: linear-gradient(135deg, var(--red), #c0392b); color: #fff;
+            border: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 0.9rem;
+            font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; margin-top: 8px;
+            transition: transform 0.15s, box-shadow 0.2s; position: relative; overflow: hidden;
         }
-
         .btn-primary::after {
-            content: '';
-            position: absolute;
-            inset: 0;
+            content: ''; position: absolute; inset: 0;
             background: linear-gradient(to right, transparent, rgba(255,255,255,0.06), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.4s;
+            transform: translateX(-100%); transition: transform 0.4s;
         }
-
         .btn-primary:hover::after { transform: translateX(100%); }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,59,92,0.35); }
         .btn-primary:active { transform: translateY(0); }
-
         .auth-switch {
-            color: var(--gold);
-            cursor: pointer;
-            display: block;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: color 0.2s;
+            color: var(--gold); cursor: pointer; display: block; margin-top: 20px; font-size: 0.9rem;
+            text-decoration: none; transition: color 0.2s;
         }
         .auth-switch:hover { color: #fff; }
-
-        /* ── MAIN APP ── */
         #main-app { display: none; }
-
-        /* ── NAV ── */
         nav {
-            background: rgba(13,21,32,0.95);
-            backdrop-filter: blur(20px);
-            padding: 0 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            height: 60px;
+            background: rgba(13,21,32,0.95); backdrop-filter: blur(20px); padding: 0 24px; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100; height: 60px;
         }
-
         nav::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
             background: linear-gradient(90deg, transparent, var(--red), var(--gold), transparent);
         }
-
         .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: var(--text);
-            letter-spacing: 3px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 900; color: var(--text);
+            letter-spacing: 3px; display: flex; align-items: center; gap: 8px;
         }
-
-        .logo-bolt {
-            color: var(--gold);
-            font-size: 1.1rem;
-            animation: pulse-bolt 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-bolt {
-            0%,100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
+        .logo-bolt { color: var(--gold); font-size: 1.1rem; animation: pulse-bolt 2s ease-in-out infinite; }
+        @keyframes pulse-bolt { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .nav-links { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
         .nav-btn {
-            background: transparent;
-            color: var(--muted);
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.2s, background 0.2s;
+            background: transparent; color: var(--muted); border: none; padding: 8px 14px; border-radius: 6px;
+            cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s, background 0.2s;
         }
-
         .nav-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-
-        .nav-btn.active {
-            color: var(--red);
-            background: var(--red-dim);
-        }
-
-        .nav-btn.manager-nav {
-            color: var(--gold);
-            border: 1px solid rgba(245,197,24,0.3);
-        }
-        .nav-btn.manager-nav.active,
-        .nav-btn.manager-nav:hover {
-            background: var(--gold-dim);
-            color: var(--gold);
-        }
-
-        .nav-logout {
-            color: var(--muted);
-            font-size: 0.85rem;
-        }
-
-        /* ── LAYOUT ── */
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 28px 20px;
-        }
-
+        .nav-btn.active { color: var(--red); background: var(--red-dim); }
+        .nav-btn.manager-nav { color: var(--gold); border: 1px solid rgba(245,197,24,0.3); }
+        .nav-btn.manager-nav.active, .nav-btn.manager-nav:hover { background: var(--gold-dim); color: var(--gold); }
+        .nav-logout { color: var(--muted); font-size: 0.85rem; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
         .page-section { display: none; animation: fadeUp 0.35s ease; }
         .page-section.active { display: block; }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── PAGE HEADERS ── */
-        .page-header {
-            margin-bottom: 28px;
-        }
-
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .page-header { margin-bottom: 28px; }
         .page-header h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--text);
+            letter-spacing: 2px; text-transform: uppercase;
         }
-
         .page-header h1 span { color: var(--red); }
         .page-header h1.gold-title span { color: var(--gold); }
-
         .page-subtext {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            margin-top: 6px;
-            text-transform: uppercase;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--muted);
+            letter-spacing: 2px; margin-top: 6px; text-transform: uppercase;
         }
-
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, var(--red), transparent);
-            margin: 12px 0 24px;
-        }
-
+        .divider { height: 1px; background: linear-gradient(90deg, var(--red), transparent); margin: 12px 0 24px; }
         .divider.gold { background: linear-gradient(90deg, var(--gold), transparent); }
-
-        /* ── STAT CARDS ── */
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 16px;
-            margin-bottom: 28px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px;
         }
-
         .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 22px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.2s, transform 0.2s;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 20px;
+            text-align: center; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s;
         }
-
         .stat-card:hover { border-color: var(--red); transform: translateY(-2px); }
-
         .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
             background: linear-gradient(90deg, var(--red), transparent);
         }
-
         .stat-card.gold::before { background: linear-gradient(90deg, var(--gold), transparent); }
         .stat-card.cyan::before { background: linear-gradient(90deg, var(--cyan), transparent); }
-
         .stat-label {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted);
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
         }
-
-        .stat-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--text);
-        }
-
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 700; color: var(--text); }
         .stat-value.red { color: var(--red); }
         .stat-value.gold { color: var(--gold); }
         .stat-value.cyan { color: var(--cyan); }
-
-        /* ── CHART CONTAINERS ── */
         .chart-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;
         }
-
-        .chart-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 22px;
-        }
-
+        .chart-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
         .chart-box h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 16px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 16px;
         }
-
         .chart-box h3.red { color: var(--red); }
         .chart-box h3.gold { color: var(--gold); }
-
-        /* ── TABLES ── */
-        .table-wrap {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
+        .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         .table-responsive { width: 100%; overflow-x: auto; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 480px;
-        }
-
-        thead tr {
-            background: var(--panel);
-        }
-
+        table { width: 100%; border-collapse: collapse; min-width: 480px; }
+        thead tr { background: var(--panel); }
         th {
-            padding: 14px 16px;
-            text-align: center;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--muted);
-            border-bottom: 1px solid var(--border);
+            padding: 14px 16px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;
+            letter-spacing: 2px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);
         }
-
         th.red { color: var(--red); }
         th.gold { color: var(--gold); }
-
-        td {
-            padding: 13px 16px;
-            text-align: center;
-            border-bottom: 1px solid rgba(26,45,69,0.5);
-            font-size: 1rem;
-        }
-
+        td { padding: 13px 16px; text-align: center; border-bottom: 1px solid rgba(26,45,69,0.5); font-size: 1rem; }
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover { background: rgba(255,59,92,0.03); }
-
-        /* ── AWARD CARDS ── */
         .awards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 28px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px;
         }
-
         .award-card {
-            background: var(--surface);
-            border: 1px solid rgba(245,197,24,0.2);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.2s, transform 0.2s;
+            background: var(--surface); border: 1px solid rgba(245,197,24,0.2); border-radius: 12px; padding: 20px;
+            text-align: center; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s;
         }
-
         .award-card:hover { border-color: var(--gold); transform: translateY(-2px); }
-
         .award-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
             background: linear-gradient(90deg, var(--gold), transparent);
         }
-
         .award-icon { font-size: 1.5rem; margin-bottom: 8px; }
-
         .award-label {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted);
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
         }
-
         .award-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text);
-            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); text-transform: uppercase;
         }
-
-        .award-val {
-            font-size: 0.85rem;
-            color: var(--red);
-            margin-top: 4px;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        /* ── FORMS ── */
+        .award-val { font-size: 0.85rem; color: var(--red); margin-top: 4px; font-family: 'Share Tech Mono', monospace; }
         .form-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 28px;
-            max-width: 520px;
-            margin: 0 auto;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px;
+            max-width: 520px; margin: 0 auto;
         }
-
         .field-label {
-            display: block;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-            margin-top: 16px;
+            display: block; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--muted);
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; margin-top: 16px;
         }
-
         select, input[type="number"], input[type="text"], input[type="password"], textarea {
-            width: 100%;
-            padding: 12px 14px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            color-scheme: dark;
+            width: 100%; padding: 12px 14px; background: var(--panel); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 1rem;
+            outline: none; transition: border-color 0.2s, box-shadow 0.2s; color-scheme: dark;
         }
-
-        select:focus, input:focus, textarea:focus {
-            border-color: var(--red);
-            box-shadow: 0 0 0 3px var(--red-dim);
-        }
-
-        input[type="file"] {
-            padding: 8px;
-            cursor: pointer;
-            color: var(--gold);
-        }
-
+        select:focus, input:focus, textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-dim); }
+        input[type="file"] { padding: 8px; cursor: pointer; color: var(--gold); }
         input[type="file"]::file-selector-button {
-            background: var(--red);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.75rem;
-            cursor: pointer;
-            margin-right: 12px;
+            background: var(--red); color: #fff; border: none; padding: 8px 16px; border-radius: 6px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.75rem; cursor: pointer; margin-right: 12px;
         }
-
         .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--red), #c0392b);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 24px;
+            width: 100%; padding: 14px; background: linear-gradient(135deg, var(--red), #c0392b); color: #fff;
+            border: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem;
+            font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; margin-top: 24px;
             transition: transform 0.15s, box-shadow 0.2s;
         }
-
         .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,59,92,0.35); }
         .submit-btn.gold-btn { background: linear-gradient(135deg, var(--gold), #d4a017); color: #000; }
         .submit-btn.gold-btn:hover { box-shadow: 0 8px 24px rgba(245,197,24,0.35); }
-
-        /* ── AI COACH BOX ── */
         .ai-coach-box {
-            background: linear-gradient(145deg, #0a0f1f, #120a2e);
-            border: 1px solid rgba(245,197,24,0.3);
-            border-radius: 12px;
-            padding: 24px;
-            margin-top: 24px;
-            display: none;
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(145deg, #0a0f1f, #120a2e); border: 1px solid rgba(245,197,24,0.3);
+            border-radius: 12px; padding: 24px; margin-top: 24px; display: none; position: relative; overflow: hidden;
         }
-
         .ai-coach-box::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--gold), var(--cyan), var(--gold));
-            background-size: 200%;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--cyan), var(--gold)); background-size: 200%;
             animation: shine 3s linear infinite;
         }
-
         .ai-coach-header {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--gold);
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-family: 'Orbitron', sans-serif; color: var(--gold); font-size: 0.9rem; letter-spacing: 2px;
+            margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
         }
-
-        .ai-coach-text {
-            font-style: italic;
-            line-height: 1.7;
-            color: var(--text);
-            font-size: 1rem;
-            margin-bottom: 14px;
-        }
-
+        .ai-coach-text { font-style: italic; line-height: 1.7; color: var(--text); font-size: 1rem; margin-bottom: 14px; }
         .ai-predict-badge {
-            display: inline-block;
-            background: var(--red);
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 1px;
+            display: inline-block; background: var(--red); color: #fff; font-family: 'Orbitron', sans-serif;
+            padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;
         }
-
-        /* ── PLAYER IDENTITY CARD ── */
-        .profile-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 28px;
-            align-items: flex-start;
-        }
-
+        .profile-container { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
         .player-card-visual {
-            background: linear-gradient(145deg, var(--surface), var(--panel));
-            border: 1px solid rgba(245,197,24,0.3);
-            border-radius: 16px;
-            width: 280px;
-            padding: 28px 24px;
-            text-align: center;
-            flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(245,197,24,0.06);
+            background: linear-gradient(145deg, var(--surface), var(--panel)); border: 1px solid rgba(245,197,24,0.3);
+            border-radius: 16px; width: 280px; padding: 28px 24px; text-align: center; flex-shrink: 0;
+            position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(245,197,24,0.06);
         }
-
         .player-card-visual::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: 17px;
+            content: ''; position: absolute; inset: -1px; border-radius: 17px;
             background: linear-gradient(135deg, rgba(245,197,24,0.3), transparent, rgba(0,212,255,0.1));
-            z-index: 0;
-            pointer-events: none;
+            z-index: 0; pointer-events: none;
         }
-
         .player-card-visual > * { position: relative; z-index: 1; }
-
         .avatar-ring {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            background: conic-gradient(var(--gold), var(--red), var(--gold));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-            animation: rotate-ring 8s linear infinite;
+            width: 110px; height: 110px; border-radius: 50%;
+            background: conic-gradient(var(--gold), var(--red), var(--gold)); display: flex;
+            align-items: center; justify-content: center; margin: 0 auto 16px; animation: rotate-ring 8s linear infinite;
         }
-
-        @keyframes rotate-ring {
-            to { transform: rotate(360deg); }
-        }
-
-        .avatar-inner {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: var(--panel);
-        }
-
-        .avatar-inner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
+        @keyframes rotate-ring { to { transform: rotate(360deg); } }
+        .avatar-inner { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; background: var(--panel); }
+        .avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
         .card-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 4px;
+            font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 2px; margin-bottom: 4px;
         }
-
         .card-position {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--gold);
-            letter-spacing: 4px;
-            margin-bottom: 20px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--gold);
+            letter-spacing: 4px; margin-bottom: 20px;
         }
-
-        .card-stats-row {
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            padding-top: 16px;
-        }
-
-        .card-stat-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .card-stat-title {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.68rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            margin-top: 2px;
-        }
-
+        .card-stats-row { display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
+        .card-stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 700; }
+        .card-stat-title { font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 2px; margin-top: 2px; }
         .card-bio {
-            margin-top: 16px;
-            font-style: italic;
-            color: var(--muted);
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            padding-top: 14px;
+            margin-top: 16px; font-style: italic; color: var(--muted); font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px;
         }
-
-        /* ── TEAM CENTER ── */
         .main-title {
-            text-align: center;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.4rem;
-            font-weight: 900;
-            letter-spacing: 6px;
-            margin-bottom: 6px;
-            background: linear-gradient(90deg, var(--red), var(--gold), var(--red));
-            background-size: 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 4s linear infinite;
+            text-align: center; font-family: 'Orbitron', sans-serif; font-size: 2.4rem; font-weight: 900;
+            letter-spacing: 6px; margin-bottom: 6px;
+            background: linear-gradient(90deg, var(--red), var(--gold), var(--red)); background-size: 200%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite;
         }
-
-        /* ── MANAGER PLAYER ROSTER ── */
-        .roster-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 16px;
-            margin-top: 24px;
-        }
-
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 24px; }
         .roster-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+            display: flex; align-items: center; gap: 16px; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            cursor: pointer; position: relative; overflow: hidden;
         }
-
         .roster-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
             background: linear-gradient(90deg, var(--gold), transparent);
         }
-
-        .roster-card:hover {
-            border-color: var(--gold);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(245,197,24,0.08);
-        }
-
-        .roster-avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            border: 2px solid var(--gold);
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .roster-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
+        .roster-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,24,0.08); }
+        .roster-avatar { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold); overflow: hidden; flex-shrink: 0; }
+        .roster-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .roster-info { flex: 1; }
-
         .roster-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 3px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 3px;
         }
-
-        .roster-position {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--gold);
-            letter-spacing: 2px;
-        }
-
-        .roster-status {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-            flex-shrink: 0;
-        }
-
-        /* ── PLAYER DETAIL MODAL (Manager View) ── */
+        .roster-position { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--gold); letter-spacing: 2px; }
+        .roster-status { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); flex-shrink: 0; }
         .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            z-index: 200; justify-content: center; align-items: center; padding: 20px;
         }
-
         .modal-overlay.active { display: flex; }
-
         .modal-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            width: 100%;
-            max-width: 520px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            animation: fadeUp 0.25s ease;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px;
+            width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; position: relative; animation: fadeUp 0.25s ease;
         }
-
         .modal-box::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: 17px;
-            background: linear-gradient(135deg, rgba(245,197,24,0.3), transparent);
-            z-index: -1;
+            content: ''; position: absolute; inset: -1px; border-radius: 17px;
+            background: linear-gradient(135deg, rgba(245,197,24,0.3), transparent); z-index: -1;
         }
-
         .modal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            color: var(--muted);
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.2s, border-color 0.2s;
+            position: absolute; top: 16px; right: 16px; background: var(--panel); border: 1px solid var(--border);
+            color: var(--muted); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center; transition: color 0.2s, border-color 0.2s;
         }
-
         .modal-close:hover { color: var(--text); border-color: var(--red); }
-
         .modal-player-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 24px;
-            padding-bottom: 20px;
+            display: flex; align-items: center; gap: 20px; margin-bottom: 24px; padding-bottom: 20px;
             border-bottom: 1px solid var(--border);
         }
-
-        .modal-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            border: 2px solid var(--gold);
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
+        .modal-avatar { width: 72px; height: 72px; border-radius: 50%; border: 2px solid var(--gold); overflow: hidden; flex-shrink: 0; }
         .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
         .modal-player-info h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 4px;
+            font-family: 'Orbitron', sans-serif; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;
         }
-
-        .modal-meta {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
+        .modal-meta { display: flex; gap: 12px; flex-wrap: wrap; }
         .meta-tag {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--muted);
-            background: var(--panel);
-            padding: 3px 10px;
-            border-radius: 4px;
-            letter-spacing: 1px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted); background: var(--panel);
+            padding: 3px 10px; border-radius: 4px; letter-spacing: 1px;
         }
-
         .meta-tag.gold { color: var(--gold); }
-
-        .modal-stats-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .modal-stat {
-            background: var(--panel);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .modal-stat-val {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .modal-stat-label {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--muted);
-            letter-spacing: 1px;
-            margin-top: 3px;
-        }
-
+        .modal-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .modal-stat { background: var(--panel); border-radius: 8px; padding: 12px; text-align: center; }
+        .modal-stat-val { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 700; }
+        .modal-stat-label { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 1px; margin-top: 3px; }
         .modal-bio {
-            font-style: italic;
-            color: var(--muted);
-            font-size: 0.9rem;
-            padding: 12px;
-            background: var(--panel);
-            border-radius: 8px;
-            border-left: 3px solid var(--gold);
-            margin-bottom: 20px;
+            font-style: italic; color: var(--muted); font-size: 0.9rem; padding: 12px; background: var(--panel);
+            border-radius: 8px; border-left: 3px solid var(--gold); margin-bottom: 20px;
         }
-
-        .modal-history h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            margin-bottom: 12px;
-        }
-
-        /* ── MANAGER PANEL RATING ── */
-        .manager-panel .submit-btn {
-            margin-top: 0;
-            padding: 8px 14px;
-            width: auto;
-            font-size: 0.75rem;
-        }
-
+        .modal-history h3 { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: var(--muted); letter-spacing: 2px; margin-bottom: 12px; }
+        .manager-panel .submit-btn { margin-top: 0; padding: 8px 14px; width: auto; font-size: 0.75rem; }
         .rating-input {
-            width: 72px;
-            text-align: center;
-            background: var(--panel);
-            border: 1px solid var(--gold);
-            border-radius: 6px;
-            color: var(--gold);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            padding: 6px;
-            margin: auto;
+            width: 72px; text-align: center; background: var(--panel); border: 1px solid var(--gold); border-radius: 6px;
+            color: var(--gold); font-family: 'Orbitron', sans-serif; font-size: 0.9rem; padding: 6px; margin: auto;
         }
-
-        /* ── ONLINE BADGE ── */
         .online-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(0,229,160,0.1);
-            border: 1px solid rgba(0,229,160,0.3);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--success);
-            letter-spacing: 1px;
+            display: inline-flex; align-items: center; gap: 6px; background: rgba(0,229,160,0.1);
+            border: 1px solid rgba(0,229,160,0.3); padding: 4px 10px; border-radius: 20px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--success); letter-spacing: 1px;
         }
-
-        .online-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 6px var(--success);
-            animation: blink 1.5s ease-in-out infinite;
-        }
-
-        @keyframes blink {
-            0%,100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* ── TOAST ── */
+        .online-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); animation: blink 1.5s ease-in-out infinite; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
         #toast {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px 20px;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            color: var(--text);
-            z-index: 999;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: transform 0.3s, opacity 0.3s;
-            max-width: 320px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            position: fixed; bottom: 28px; right: 28px; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 20px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--text);
+            z-index: 999; transform: translateY(100px); opacity: 0; transition: transform 0.3s, opacity 0.3s;
+            max-width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
-
-        #toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
+        #toast.show { transform: translateY(0); opacity: 1; }
         #toast.success { border-left: 4px solid var(--success); }
         #toast.error { border-left: 4px solid var(--red); }
         #toast.info { border-left: 4px solid var(--gold); }
-
-        /* ── HISTORY MATCH PILL ── */
-        .match-pill {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.72rem;
-            letter-spacing: 1px;
-        }
-
+        .match-pill { display: inline-block; padding: 3px 10px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; letter-spacing: 1px; }
         .match-pill.Practice { background: var(--cyan-dim); color: var(--cyan); }
         .match-pill.League   { background: var(--gold-dim); color: var(--gold); }
         .match-pill.Main     { background: var(--red-dim);  color: var(--red); }
-
-        /* ── RANK MEDAL ── */
         .rank-medal { font-family: 'Orbitron', sans-serif; font-weight: 700; }
         .rank-medal.gold   { color: var(--gold); }
         .rank-medal.silver { color: #a0a9b8; }
         .rank-medal.bronze { color: #cd7f32; }
-
-        /* ── RESPONSIVE / MOBILE ── */
-
-        /* Hamburger button */
         .nav-hamburger {
-            display: none;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            display: none; background: transparent; border: 1px solid var(--border); color: var(--text);
+            width: 38px; height: 38px; border-radius: 8px; font-size: 1.2rem; cursor: pointer;
+            align-items: center; justify-content: center; flex-shrink: 0;
         }
-
         @media (max-width: 768px) {
-            /* Nav */
             nav { padding: 0 14px; height: 56px; }
             .logo { font-size: 1.05rem; letter-spacing: 2px; }
             .nav-hamburger { display: flex; }
-
             .nav-links {
-                display: none;
-                position: fixed;
-                top: 56px;
-                left: 0; right: 0;
-                background: rgba(13,21,32,0.98);
-                backdrop-filter: blur(20px);
-                border-bottom: 1px solid var(--border);
-                flex-direction: column;
-                padding: 12px 16px 20px;
-                gap: 4px;
-                z-index: 99;
+                display: none; position: fixed; top: 56px; left: 0; right: 0; background: rgba(13,21,32,0.98);
+                backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); flex-direction: column;
+                padding: 12px 16px 20px; gap: 4px; z-index: 99;
             }
-
             .nav-links.open { display: flex; }
-
-            .nav-btn {
-                width: 100%;
-                text-align: left;
-                padding: 12px 16px;
-                font-size: 0.95rem;
-                border-radius: 8px;
-            }
-
-            /* Content */
+            .nav-btn { width: 100%; text-align: left; padding: 12px 16px; font-size: 0.95rem; border-radius: 8px; }
             .container { padding: 20px 14px; }
             .main-title { font-size: 1.5rem; letter-spacing: 3px; }
             .page-header h1 { font-size: 1.2rem; }
-
-            /* Stats grid — 2 cols on mobile */
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
             .stat-card { padding: 16px 12px; }
             .stat-value { font-size: 1.7rem; }
-
-            /* Charts stack */
             .chart-row { grid-template-columns: 1fr; }
-
-            /* Profile */
             .profile-container { flex-direction: column; align-items: center; }
             .player-card-visual { width: 100%; max-width: 100%; }
-
-            /* Awards grid — 2x2 */
             .awards-grid { grid-template-columns: repeat(2, 1fr); }
-
-            /* Modal */
             .modal-stats-row { grid-template-columns: repeat(2, 1fr); }
             .modal-box { padding: 20px 16px; }
-
-            /* Table */
             table { min-width: 400px; font-size: 0.85rem; }
             th, td { padding: 10px 10px; }
-
-            /* Roster grid */
             .roster-grid { grid-template-columns: 1fr; }
-
-            /* Form */
             .form-box { padding: 20px 16px; }
-
-            /* Toast */
             #toast { bottom: 16px; right: 16px; left: 16px; max-width: none; font-size: 0.9rem; }
-
-            /* Auth box */
             .auth-box { padding: 32px 24px; }
             .auth-logo { font-size: 2.2rem; }
         }
-
         @media (max-width: 400px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .awards-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
             .award-card { padding: 14px 10px; }
             .award-icon { font-size: 1.4rem; }
         }
-
-        /* ── NOTIFICATION BELL ── */
         .notif-bell {
-            position: relative;
-            cursor: pointer;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--muted);
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: border-color 0.2s, color 0.2s;
-            flex-shrink: 0;
+            position: relative; cursor: pointer; background: transparent; border: 1px solid var(--border);
+            color: var(--muted); width: 38px; height: 38px; border-radius: 8px; font-size: 1.1rem; display: flex;
+            align-items: center; justify-content: center; transition: border-color 0.2s, color 0.2s; flex-shrink: 0;
         }
         .notif-bell:hover { border-color: var(--gold); color: var(--gold); }
-
         .notif-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--red);
-            color: #fff;
-            font-size: 0.65rem;
-            font-weight: 700;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Orbitron', sans-serif;
-            display: none;
+            position: absolute; top: -5px; right: -5px; background: var(--red); color: #fff; font-size: 0.65rem;
+            font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-family: 'Orbitron', sans-serif; display: none;
         }
-
         .notif-dropdown {
-            display: none;
-            position: fixed;
-            top: 64px;
-            right: 16px;
-            width: 320px;
-            max-height: 400px;
-            overflow-y: auto;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            z-index: 300;
+            display: none; position: fixed; top: 64px; right: 16px; width: 320px; max-height: 400px; overflow-y: auto;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px; z-index: 300;
             box-shadow: 0 16px 48px rgba(0,0,0,0.5);
         }
         .notif-dropdown.open { display: block; }
-
-        .notif-header {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .notif-header span {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.78rem;
-            color: var(--gold);
-            letter-spacing: 1px;
-        }
-        .notif-mark-all {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--muted);
-            cursor: pointer;
-            background: none;
-            border: none;
-            transition: color 0.2s;
-        }
+        .notif-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .notif-header span { font-family: 'Orbitron', sans-serif; font-size: 0.78rem; color: var(--gold); letter-spacing: 1px; }
+        .notif-mark-all { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--muted); cursor: pointer; background: none; border: none; transition: color 0.2s; }
         .notif-mark-all:hover { color: var(--gold); }
-
-        .notif-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(26,45,69,0.5);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
+        .notif-item { padding: 12px 16px; border-bottom: 1px solid rgba(26,45,69,0.5); font-size: 0.9rem; line-height: 1.5; cursor: pointer; transition: background 0.15s; }
         .notif-item:last-child { border-bottom: none; }
         .notif-item:hover { background: rgba(255,255,255,0.03); }
         .notif-item.unread { border-left: 3px solid var(--gold); }
-        .notif-item .notif-time {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.68rem;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-        .notif-empty {
-            padding: 24px;
-            text-align: center;
-            color: var(--muted);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
-
-        /* ── MANAGER SUMMARY CARDS ── */
-        .manager-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-        .summary-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 18px 16px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--gold), transparent);
-        }
-        .summary-card-val {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--gold);
-        }
-        .summary-card-label {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.68rem;
-            color: var(--muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-top: 4px;
-        }
-        .summary-card-sub {
-            font-size: 0.78rem;
-            color: var(--text);
-            margin-top: 6px;
-            font-weight: 600;
-        }
-
-        /* ── REJECT BTN ── */
+        .notif-item .notif-time { font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: var(--muted); margin-top: 4px; }
+        .notif-empty { padding: 24px; text-align: center; color: var(--muted); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; }
+        .manager-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+        .summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px; text-align: center; position: relative; overflow: hidden; }
+        .summary-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); }
+        .summary-card-val { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--gold); }
+        .summary-card-label { font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
         .reject-btn {
-            background: transparent;
-            border: 1px solid var(--red);
-            color: var(--red);
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            cursor: pointer;
-            margin-left: 6px;
-            transition: background 0.2s, color 0.2s;
+            background: transparent; border: 1px solid var(--red); color: var(--red); padding: 8px 14px; border-radius: 6px;
+            font-family: 'Orbitron', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; cursor: pointer;
+            margin-left: 6px; transition: background 0.2s, color 0.2s;
         }
         .reject-btn:hover { background: var(--red); color: #fff; }
-
-        /* ── MANAGER ONLY ── */
         .manager-only { display: none; }
         .player-only { display: inline-block; }
+        .season-detail-item { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); }
     </style>
 </head>
 <body>
 
-<!-- ═══════════════════ AUTH SCREEN ═══════════════════ -->
 <section id="auth-section">
     <div class="auth-box">
         <div class="auth-logo">RPCF</div>
         <div class="auth-tagline">ELITE SQUAD ANALYTICS</div>
         <div class="auth-title" id="auth-title">PLAYER LOGIN</div>
-
         <div class="input-group">
             <label>Player Name</label>
             <input type="text" id="auth-name" placeholder="Enter your name" required>
@@ -1383,14 +488,12 @@
             <label>Password</label>
             <input type="password" id="auth-pass" placeholder="••••••••" required>
         </div>
-
         <button class="btn-primary" onclick="handleAuth()" id="auth-btn">ENTER ARENA</button>
         <span class="auth-switch" onclick="toggleAuthMode()" id="auth-toggle">New Player? Register Here →</span>
         <span class="auth-switch" onclick="showForgotPassword()" style="color:var(--muted); font-size:0.82rem; margin-top:6px;">Forgot Password? →</span>
     </div>
 </section>
 
-<!-- FORGOT PASSWORD MODAL -->
 <div class="modal-overlay" id="forgot-modal" style="z-index:500;">
     <div class="modal-box" style="max-width:420px;">
         <button class="modal-close" onclick="closeForgotModal()">✕</button>
@@ -1407,7 +510,6 @@
     </div>
 </div>
 
-<!-- ═══════════════════ MAIN APP ═══════════════════ -->
 <div id="main-app">
     <nav>
         <div class="logo">RPCF <span class="logo-bolt">⚡</span></div>
@@ -1421,11 +523,16 @@
             <button class="nav-btn player-only active" onclick="switchPage('dashboard', this)">Analytics</button>
             <button class="nav-btn player-only" onclick="switchPage('profile-page', this)">Profile</button>
             <button class="nav-btn player-only" onclick="switchPage('history-page', this)">History</button>
+            <button class="nav-btn player-only" onclick="switchPage('career-page', this)">Career</button>
             <button class="nav-btn" onclick="switchPage('rankings', this)">Leaderboard</button>
             <button class="nav-btn" onclick="switchPage('team-center', this)">Team</button>
+            <button class="nav-btn" onclick="switchPage('season-history', this)">Seasons</button>
+            <button class="nav-btn" onclick="switchPage('hall-of-fame', this)">Hall of Fame</button>
+            <button class="nav-btn" onclick="switchPage('matches-page', this)">Matches</button>
             <button class="nav-btn player-only" onclick="switchPage('update-stats', this)">Log Match</button>
             <button class="nav-btn manager-only manager-nav" onclick="switchPage('manager-panel', this)">Portal</button>
             <button class="nav-btn manager-only manager-nav" onclick="switchPage('squad-roster', this)">Squad</button>
+            <button class="nav-btn manager-only manager-nav" onclick="switchPage('season-admin', this)">Season Mgmt</button>
             <button class="nav-btn manager-only manager-nav" onclick="switchPage('reset-requests', this)">Resets</button>
             <button class="nav-btn manager-only manager-nav" onclick="switchPage('admin-panel', this)">Admin</button>
             <button class="nav-btn nav-logout" onclick="logout()">Logout</button>
@@ -1433,7 +540,6 @@
         </div>
     </nav>
 
-    <!-- NOTIFICATION DROPDOWN -->
     <div class="notif-dropdown" id="notif-dropdown">
         <div class="notif-header">
             <span>🔔 NOTIFICATIONS</span>
@@ -1444,7 +550,6 @@
 
     <div class="container">
 
-        <!-- ─── PLAYER ANALYTICS ─── -->
         <section id="dashboard" class="page-section active">
             <div class="page-header">
                 <h1><span>Player</span> Analytics</h1>
@@ -1452,234 +557,141 @@
                 <div class="divider"></div>
             </div>
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Match-Days</div>
-                    <div class="stat-value" id="dash-matches">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Total Goals</div>
-                    <div class="stat-value red" id="dash-goals">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Total Assists</div>
-                    <div class="stat-value" id="dash-assists">0</div>
-                </div>
-                <div class="stat-card gold">
-                    <div class="stat-label">Avg Rating</div>
-                    <div class="stat-value gold" id="dash-rating">0.0</div>
-                </div>
+                <div class="stat-card"><div class="stat-label">Match-Days</div><div class="stat-value" id="dash-matches">0</div></div>
+                <div class="stat-card"><div class="stat-label">Total Goals</div><div class="stat-value red" id="dash-goals">0</div></div>
+                <div class="stat-card"><div class="stat-label">Total Assists</div><div class="stat-value" id="dash-assists">0</div></div>
+                <div class="stat-card gold"><div class="stat-label">Avg Rating</div><div class="stat-value gold" id="dash-rating">0.0</div></div>
             </div>
             <div class="chart-row">
-                <div class="chart-box">
-                    <h3 class="gold">Goal & Assist Trends</h3>
-                    <canvas id="trendsChart"></canvas>
-                </div>
-                <div class="chart-box">
-                    <h3 class="red">Manager Rating Matrix</h3>
-                    <canvas id="growthChart"></canvas>
-                </div>
+                <div class="chart-box"><h3 class="gold">Goal & Assist Trends</h3><canvas id="trendsChart"></canvas></div>
+                <div class="chart-box"><h3 class="red">Manager Rating Matrix</h3><canvas id="growthChart"></canvas></div>
             </div>
         </section>
 
-        <!-- ─── PLAYER PROFILE ─── -->
         <section id="profile-page" class="page-section">
-            <div class="page-header">
-                <h1><span>Player</span> Identity</h1>
-                <div class="divider"></div>
-            </div>
+            <div class="page-header"><h1><span>Player</span> Identity</h1><div class="divider"></div></div>
             <div class="profile-container">
                 <div class="player-card-visual">
-                    <div class="avatar-ring">
-                        <div class="avatar-inner">
-                            <img id="card-pic" src="https://cdn-icons-png.flaticon.com/512/166/166258.png" alt="Avatar">
-                        </div>
-                    </div>
+                    <div class="avatar-ring"><div class="avatar-inner"><img id="card-pic" src="https://cdn-icons-png.flaticon.com/512/166/166258.png" alt="Avatar"></div></div>
                     <div class="card-name" id="card-name">Player</div>
                     <div class="card-position" id="card-position">POSITION</div>
                     <div class="card-stats-row">
-                        <div>
-                            <div class="card-stat-value" id="card-age">--</div>
-                            <div class="card-stat-title">AGE</div>
-                        </div>
-                        <div>
-                            <div class="card-stat-value" style="color:var(--gold)" id="card-foot">R</div>
-                            <div class="card-stat-title">FOOT</div>
-                        </div>
-                        <div>
-                            <div class="card-stat-value" style="color:var(--red)" id="card-jersey">#--</div>
-                            <div class="card-stat-title">JERSEY</div>
-                        </div>
+                        <div><div class="card-stat-value" id="card-age">--</div><div class="card-stat-title">AGE</div></div>
+                        <div><div class="card-stat-value" style="color:var(--gold)" id="card-foot">R</div><div class="card-stat-title">FOOT</div></div>
+                        <div><div class="card-stat-value" style="color:var(--red)" id="card-jersey">#--</div><div class="card-stat-title">JERSEY</div></div>
                     </div>
                     <div class="card-bio" id="card-bio">"Ready to make history on the pitch."</div>
                 </div>
-
                 <div class="form-box" style="flex:1; margin:0; max-width:none;">
                     <h2 style="font-family:'Orbitron',sans-serif; font-size:1rem; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Update Contract</h2>
                     <div class="divider gold"></div>
-
                     <label class="field-label">Profile Image</label>
                     <input type="file" id="profile-pic-input" accept="image/png,image/jpeg,image/webp">
-
                     <label class="field-label">Jersey Number</label>
                     <input type="number" id="profile-jersey" min="1" max="99" value="0" placeholder="e.g. 10">
-
                     <label class="field-label">Primary Position</label>
                     <select id="profile-position">
-                        <option value="ST">ST — Striker</option>
-                        <option value="LW">LW — Left Wing</option>
-                        <option value="RW">RW — Right Wing</option>
-                        <option value="CAM">CAM — Attacking Mid</option>
-                        <option value="CM">CM — Center Mid</option>
-                        <option value="CDM">CDM — Defensive Mid</option>
-                        <option value="CB">CB — Center Back</option>
-                        <option value="LB">LB — Left Back</option>
-                        <option value="RB">RB — Right Back</option>
-                        <option value="GK">GK — Goalkeeper</option>
+                        <option value="ST">ST — Striker</option><option value="LW">LW — Left Wing</option>
+                        <option value="RW">RW — Right Wing</option><option value="CAM">CAM — Attacking Mid</option>
+                        <option value="CM">CM — Center Mid</option><option value="CDM">CDM — Defensive Mid</option>
+                        <option value="CB">CB — Center Back</option><option value="LB">LB — Left Back</option>
+                        <option value="RB">RB — Right Back</option><option value="GK">GK — Goalkeeper</option>
                     </select>
-
                     <label class="field-label">Preferred Foot</label>
-                    <select id="profile-foot">
-                        <option value="Right">Right</option>
-                        <option value="Left">Left</option>
-                        <option value="Both">Both</option>
-                    </select>
-
+                    <select id="profile-foot"><option value="Right">Right</option><option value="Left">Left</option><option value="Both">Both</option></select>
                     <label class="field-label">Age</label>
                     <input type="number" id="profile-age" min="10" max="99" value="18">
-
                     <label class="field-label">Player Biography</label>
                     <textarea id="profile-bio" rows="3" maxlength="80" placeholder="Short quote or playstyle..."></textarea>
-
                     <button class="submit-btn gold-btn" onclick="saveProfile()">Save Identity</button>
                 </div>
             </div>
         </section>
 
-        <!-- ─── LEADERBOARD ─── -->
+        <section id="career-page" class="page-section">
+            <div class="page-header"><h1>My <span style="color:var(--gold)">Career</span></h1>
+                <div class="page-subtext">Season-by-season · Career totals · Awards · Badges</div><div class="divider gold"></div></div>
+            <div id="career-content"></div>
+        </section>
+
         <section id="rankings" class="page-section">
             <div class="main-title">REAL POPHRAN C.F.</div>
-            <div style="text-align:center; margin-bottom:24px;">
-                <span class="online-badge"><span class="online-dot"></span> LIVE RANKINGS</span>
-            </div>
+            <div style="text-align:center; margin-bottom:24px;"><span class="online-badge"><span class="online-dot"></span> LIVE RANKINGS</span></div>
             <div class="awards-grid">
-                <div class="award-card">
-                    <div class="award-icon">🏆</div>
-                    <div class="award-label">Top Scorer</div>
-                    <div class="award-name" id="award-scorer">—</div>
-                    <div class="award-val" id="award-scorer-val">0 Goals</div>
-                </div>
-                <div class="award-card">
-                    <div class="award-icon">🎯</div>
-                    <div class="award-label">Top Assister</div>
-                    <div class="award-name" id="award-assister">—</div>
-                    <div class="award-val" id="award-assister-val">0 Assists</div>
-                </div>
-                <div class="award-card">
-                    <div class="award-icon">⭐</div>
-                    <div class="award-label">Best Rated</div>
-                    <div class="award-name" id="award-rated">—</div>
-                    <div class="award-val" id="award-rated-val">0.0 Avg</div>
-                </div>
-                <div class="award-card">
-                    <div class="award-icon">📈</div>
-                    <div class="award-label">Most Improved</div>
-                    <div class="award-name" id="award-improved">—</div>
-                    <div class="award-val" id="award-improved-val">Trending Up</div>
-                </div>
+                <div class="award-card"><div class="award-icon">🏆</div><div class="award-label">Top Scorer</div><div class="award-name" id="award-scorer">—</div><div class="award-val" id="award-scorer-val">0 Goals</div></div>
+                <div class="award-card"><div class="award-icon">🎯</div><div class="award-label">Top Assister</div><div class="award-name" id="award-assister">—</div><div class="award-val" id="award-assister-val">0 Assists</div></div>
+                <div class="award-card"><div class="award-icon">⭐</div><div class="award-label">Best Rated</div><div class="award-name" id="award-rated">—</div><div class="award-val" id="award-rated-val">0.0 Avg</div></div>
+                <div class="award-card"><div class="award-icon">📈</div><div class="award-label">Most Improved</div><div class="award-name" id="award-improved">—</div><div class="award-val" id="award-improved-val">Trending Up</div></div>
             </div>
-            <div class="table-wrap">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="red">Rank</th>
-                                <th>Player</th>
-                                <th>Pos</th>
-                                <th>Match-Days</th>
-                                <th>Goals</th>
-                                <th>Assists</th>
-                                <th class="gold">Total Pts</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rankings-body"></tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="table-wrap"><div class="table-responsive"><table>
+                <thead><tr><th class="red">Rank</th><th>Player</th><th>Pos</th><th>Match-Days</th><th>Goals</th><th>Assists</th><th class="gold">Total Pts</th></tr></thead>
+                <tbody id="rankings-body"></tbody>
+            </table></div></div>
         </section>
 
-        <!-- ─── TEAM CENTER ─── -->
         <section id="team-center" class="page-section">
-            <div class="page-header">
-                <h1><span>Club</span> Team Center</h1>
-                <div class="page-subtext">Aggregate squad performance · All certified appearances</div>
-                <div class="divider"></div>
-            </div>
+            <div class="page-header"><h1><span>Club</span> Team Center</h1>
+                <div class="page-subtext">Aggregate squad performance · All certified appearances</div><div class="divider"></div></div>
             <div class="stats-grid">
-                <div class="stat-card gold">
-                    <div class="stat-label">Squad Goals</div>
-                    <div class="stat-value gold" id="team-goals-card">0</div>
-                </div>
-                <div class="stat-card gold">
-                    <div class="stat-label">Squad Assists</div>
-                    <div class="stat-value gold" id="team-assists-card">0</div>
-                </div>
-                <div class="stat-card gold">
-                    <div class="stat-label">Squad Avg Rating</div>
-                    <div class="stat-value gold" id="team-rating-card">0.0</div>
-                </div>
-                <div class="stat-card cyan">
-                    <div class="stat-label">Club MVP</div>
-                    <div class="stat-value cyan" style="font-size:1.4rem; letter-spacing:1px;" id="team-mvp-card">—</div>
-                </div>
+                <div class="stat-card gold"><div class="stat-label">Squad Goals</div><div class="stat-value gold" id="team-goals-card">0</div></div>
+                <div class="stat-card gold"><div class="stat-label">Squad Assists</div><div class="stat-value gold" id="team-assists-card">0</div></div>
+                <div class="stat-card gold"><div class="stat-label">Squad Avg Rating</div><div class="stat-value gold" id="team-rating-card">0.0</div></div>
+                <div class="stat-card cyan"><div class="stat-label">Club MVP</div><div class="stat-value cyan" style="font-size:1.4rem; letter-spacing:1px;" id="team-mvp-card">—</div></div>
             </div>
+            <div class="chart-row"><div class="chart-box"><h3 class="gold">Season Comparison</h3><canvas id="comparisonChart"></canvas></div></div>
         </section>
 
-        <!-- ─── LOG PERFORMANCE ─── -->
-        <section id="update-stats" class="page-section">
-            <div class="page-header">
-                <h1>Log Match <span>Performance</span></h1>
-                <div class="page-subtext">Submit your stats after every match · Awaits manager approval</div>
-                <div class="divider"></div>
-            </div>
-            <div class="form-box">
+        <section id="season-history" class="page-section">
+            <div class="page-header"><h1>Season <span style="color:var(--gold)">History</span></h1>
+                <div class="page-subtext">Every season preserved forever · Like FIFA & Transfermarkt</div><div class="divider gold"></div></div>
+            <div class="awards-grid" id="season-history-grid"></div>
+        </section>
 
+        <section id="hall-of-fame" class="page-section">
+            <div class="main-title">RPCF HALL OF FAME</div>
+            <div style="text-align:center; margin-bottom:24px;"><span class="online-badge"><span class="online-dot"></span> ALL-TIME LEGENDS</span></div>
+            <div class="chart-row" id="hof-grid"></div>
+        </section>
+
+        <section id="matches-page" class="page-section">
+            <div class="page-header"><h1>Match <span>History</span></h1>
+                <div class="page-subtext">Every match stays forever</div><div class="divider"></div></div>
+            <div id="match-list"></div>
+        </section>
+
+        <section id="update-stats" class="page-section">
+            <div class="page-header"><h1>Log Match <span>Performance</span></h1>
+                <div class="page-subtext">Submit your stats after every match · Awaits manager approval</div><div class="divider"></div></div>
+            <div class="form-box">
                 <label class="field-label">Match Format</label>
                 <select id="match_type" onchange="updateMultiplierBadge()">
                     <option value="Practice">⚽ Practice Session — 0.5× Points</option>
                     <option value="League">🏟️ R.P.C.F League — 1.0× Points</option>
                     <option value="Main">🔥 Main Match — 2.0× Points</option>
                 </select>
-
                 <div style="margin: 10px 0 20px; display:flex; align-items:center; gap:10px;">
                     <span style="font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase;">Points Multiplier:</span>
                     <span id="multiplier-badge" style="font-family:'Orbitron',sans-serif; font-size:0.85rem; font-weight:700; color:var(--cyan); background:var(--cyan-dim); padding:4px 12px; border-radius:6px; border:1px solid var(--cyan);">0.5×</span>
                 </div>
-
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                    <div>
-                        <label class="field-label">Goals Scored</label>
-                        <input type="number" id="goals" min="0" max="20" value="0" oninput="updateAIPreview()">
-                    </div>
-                    <div>
-                        <label class="field-label">Assists Given</label>
-                        <input type="number" id="assists" min="0" max="20" value="0" oninput="updateAIPreview()">
-                    </div>
+                    <div><label class="field-label">Goals Scored</label><input type="number" id="goals" min="0" max="20" value="0" oninput="updateAIPreview()"></div>
+                    <div><label class="field-label">Assists Given</label><input type="number" id="assists" min="0" max="20" value="0" oninput="updateAIPreview()"></div>
                 </div>
-
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+                    <div><label class="field-label">Clean Sheet? (GK/DEF)</label><select id="clean_sheet"><option value="0">No</option><option value="1">Yes</option></select></div>
+                    <div><label class="field-label">Man of the Match?</label><select id="is_motm"><option value="0">No</option><option value="1">Yes</option></select></div>
+                </div>
                 <label class="field-label" style="margin-top:16px;">Self Performance Rating (1–10)</label>
                 <div style="display:flex; align-items:center; gap:12px;">
                     <input type="range" id="player_rating" min="1" max="10" step="0.5" value="6" oninput="updateRatingDisplay()" style="flex:1; accent-color:var(--red); height:6px; cursor:pointer;">
                     <span id="rating-display" style="font-family:'Orbitron',sans-serif; font-size:1.2rem; font-weight:700; color:var(--gold); min-width:36px; text-align:right;">6.0</span>
                 </div>
-
                 <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:14px 16px; margin-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <span style="font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">Expected Rating Estimate:</span>
                     <span id="live-predict" style="font-family:'Orbitron',sans-serif; font-size:1rem; font-weight:700; color:var(--red);">6.0 / 10</span>
                 </div>
-
                 <button class="submit-btn" onclick="submitStats()">⚡ Compile Engine</button>
             </div>
-
             <div class="ai-coach-box" id="ai-coach-panel">
                 <div class="ai-coach-header">🤖 RPCF AI COACH MATRIX</div>
                 <div class="ai-coach-text" id="ai-coach-response"></div>
@@ -1687,152 +699,93 @@
             </div>
         </section>
 
-        <!-- ─── MATCH HISTORY ─── -->
         <section id="history-page" class="page-section">
-            <div class="page-header">
-                <h1>Performance <span>History</span></h1>
-                <div class="page-subtext">Complete timeline · All certified appearances</div>
-                <div class="divider"></div>
-            </div>
-            <div class="table-wrap">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Format</th>
-                                <th>Goals</th>
-                                <th>Assists</th>
-                                <th class="red">Rating</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-body"></tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="page-header"><h1>Performance <span>History</span></h1>
+                <div class="page-subtext">Complete timeline · All certified appearances</div><div class="divider"></div></div>
+            <div class="table-wrap"><div class="table-responsive"><table>
+                <thead><tr><th>Date</th><th>Format</th><th>Goals</th><th>Assists</th><th class="red">Rating</th></tr></thead>
+                <tbody id="history-body"></tbody>
+            </table></div></div>
         </section>
 
-        <!-- ─── MANAGER PORTAL ─── -->
         <section id="manager-panel" class="page-section manager-panel">
-            <div class="page-header">
-                <h1 style="color:var(--text)">Manager <span style="color:var(--gold)">Control Panel</span></h1>
-                <div class="page-subtext">Review submissions · Assign official ratings</div>
-                <div class="divider gold"></div>
-            </div>
-
-            <!-- Manager Summary Cards -->
+            <div class="page-header"><h1 style="color:var(--text)">Manager <span style="color:var(--gold)">Control Panel</span></h1>
+                <div class="page-subtext">Review submissions · Assign official ratings</div><div class="divider gold"></div></div>
             <div class="manager-summary-grid">
-                <div class="summary-card">
-                    <div class="summary-card-val" id="mgr-pending">0</div>
-                    <div class="summary-card-label">Pending Reviews</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card-val" id="mgr-today">0</div>
-                    <div class="summary-card-label">Today's Submissions</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card-val" id="mgr-avg">0.0</div>
-                    <div class="summary-card-label">Team Avg Rating</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card-val" style="font-size:1rem; padding-top:6px;" id="mgr-top">—</div>
-                    <div class="summary-card-label">Top Performer</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-card-val" style="font-size:1rem; padding-top:6px;" id="mgr-low">—</div>
-                    <div class="summary-card-label">Needs Improvement</div>
-                </div>
+                <div class="summary-card"><div class="summary-card-val" id="mgr-pending">0</div><div class="summary-card-label">Pending Reviews</div></div>
+                <div class="summary-card"><div class="summary-card-val" id="mgr-today">0</div><div class="summary-card-label">Today's Submissions</div></div>
+                <div class="summary-card"><div class="summary-card-val" id="mgr-avg">0.0</div><div class="summary-card-label">Team Avg Rating</div></div>
+                <div class="summary-card"><div class="summary-card-val" style="font-size:1rem; padding-top:6px;" id="mgr-top">—</div><div class="summary-card-label">Top Performer</div></div>
+                <div class="summary-card"><div class="summary-card-val" style="font-size:1rem; padding-top:6px;" id="mgr-low">—</div><div class="summary-card-label">Needs Improvement</div></div>
             </div>
+            <div class="table-wrap"><div class="table-responsive"><table>
+                <thead><tr><th class="gold">Player</th><th>Format</th><th>Goals</th><th>Assists</th><th>Date</th><th class="gold">Rating / 10</th><th>Action</th></tr></thead>
+                <tbody id="manager-body"></tbody>
+            </table></div></div>
+        </section>
 
-            <div class="table-wrap">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="gold">Player</th>
-                                <th>Format</th>
-                                <th>Goals</th>
-                                <th>Assists</th>
-                                <th>Date</th>
-                                <th class="gold">Rating / 10</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="manager-body"></tbody>
-                    </table>
+        <section id="season-admin" class="page-section manager-only" style="display:none;">
+            <div class="page-header"><h1>Season <span style="color:var(--gold)">Management</span></h1>
+                <div class="page-subtext">Archive current season · Auto-generate awards · Record matches</div><div class="divider gold"></div></div>
+            <div class="form-box">
+                <div id="current-season-info" style="text-align:center;margin-bottom:16px;font-family:'Orbitron',sans-serif;color:var(--cyan);"></div>
+                <label class="field-label">Champion (this season)</label>
+                <input type="text" id="season-champion" value="RPCF">
+                <label class="field-label">Runner-Up</label>
+                <input type="text" id="season-runnerup" placeholder="Optional">
+                <label class="field-label">New Season Name</label>
+                <input type="text" id="season-newname" placeholder="e.g. Season 2027">
+                <button class="submit-btn gold-btn" onclick="archiveSeason()">🏁 Archive & Start New Season</button>
+            </div>
+            <div class="form-box" style="margin-top:20px;">
+                <h2 style="font-family:'Orbitron',sans-serif;font-size:1rem;color:var(--gold);letter-spacing:2px;margin-bottom:4px;">Record a Match</h2>
+                <div class="divider gold"></div>
+                <label class="field-label">Opponent</label>
+                <input type="text" id="m-opponent" placeholder="e.g. United">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div><label class="field-label">Our Score</label><input type="number" id="m-ours" value="0" min="0"></div>
+                    <div><label class="field-label">Their Score</label><input type="number" id="m-theirs" value="0" min="0"></div>
                 </div>
+                <label class="field-label">Scorers</label>
+                <input type="text" id="m-scorers" placeholder="Kaif x2, Hashir">
+                <label class="field-label">Assists</label>
+                <input type="text" id="m-assists" placeholder="Saurabh">
+                <label class="field-label">MOTM</label>
+                <input type="text" id="m-motm" placeholder="Kaif">
+                <button class="submit-btn" onclick="recordMatch()">💾 Save Match</button>
             </div>
         </section>
 
-        <!-- ─── PASSWORD RESET REQUESTS (Manager Only) ─── -->
         <section id="reset-requests" class="page-section manager-only" style="display:none;">
-            <div class="page-header">
-                <h1 style="color:var(--text);">Password <span style="color:var(--gold);">Reset Requests</span></h1>
-                <div class="page-subtext">Approve or reject player password reset requests</div>
-                <div class="divider gold"></div>
-            </div>
-            <div class="table-wrap">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="gold">Player</th>
-                                <th>Requested At</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reset-body"></tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="page-header"><h1 style="color:var(--text);">Password <span style="color:var(--gold);">Reset Requests</span></h1>
+                <div class="page-subtext">Approve or reject player password reset requests</div><div class="divider gold"></div></div>
+            <div class="table-wrap"><div class="table-responsive"><table>
+                <thead><tr><th class="gold">Player</th><th>Requested At</th><th>Action</th></tr></thead>
+                <tbody id="reset-body"></tbody>
+            </table></div></div>
         </section>
 
-        <!-- ─── ADMIN PANEL (Manager Only) ─── -->
         <section id="admin-panel" class="page-section manager-only" style="display:none;">
-            <div class="page-header">
-                <h1 style="color:var(--text);">Admin <span style="color:var(--gold);">Panel</span></h1>
-                <div class="page-subtext">View · Edit · Ban · Delete players</div>
-                <div class="divider gold"></div>
-            </div>
-            <div class="table-wrap">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="gold">Player</th>
-                                <th>Role</th>
-                                <th>Position</th>
-                                <th>Jersey</th>
-                                <th>Matches</th>
-                                <th>Points</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-body"></tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="page-header"><h1 style="color:var(--text);">Admin <span style="color:var(--gold);">Panel</span></h1>
+                <div class="page-subtext">View · Edit · Ban · Delete players</div><div class="divider gold"></div></div>
+            <div class="table-wrap"><div class="table-responsive"><table>
+                <thead><tr><th class="gold">Player</th><th>Role</th><th>Position</th><th>Jersey</th><th>Matches</th><th>Points</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="admin-body"></tbody>
+            </table></div></div>
         </section>
 
-        <!-- ─── SQUAD ROSTER (Manager Only) ─── -->
         <section id="squad-roster" class="page-section">
-            <div class="page-header">
-                <h1>Squad <span style="color:var(--gold)">Roster</span></h1>
-                <div class="page-subtext">All registered players · Click a card to view full profile</div>
-                <div class="divider gold"></div>
-            </div>
+            <div class="page-header"><h1>Squad <span style="color:var(--gold)">Roster</span></h1>
+                <div class="page-subtext">All registered players · Click a card to view full profile</div><div class="divider gold"></div></div>
             <div class="roster-grid" id="roster-grid"></div>
         </section>
 
     </div>
 </div>
 
-<!-- ─── PLAYER DETAIL MODAL ─── -->
 <div class="modal-overlay" id="player-modal">
     <div class="modal-box">
         <button class="modal-close" onclick="closeModal()">✕</button>
-
         <div class="modal-player-header">
             <div class="modal-avatar"><img id="modal-avatar" src="" alt=""></div>
             <div class="modal-player-info">
@@ -1844,56 +797,31 @@
                 </div>
             </div>
         </div>
-
         <div class="modal-bio" id="modal-bio">"Ready to make history on the pitch."</div>
-
         <div class="modal-stats-row">
-            <div class="modal-stat">
-                <div class="modal-stat-val" id="modal-matches">0</div>
-                <div class="modal-stat-label">MATCHES</div>
-            </div>
-            <div class="modal-stat">
-                <div class="modal-stat-val" style="color:var(--red)" id="modal-goals">0</div>
-                <div class="modal-stat-label">GOALS</div>
-            </div>
-            <div class="modal-stat">
-                <div class="modal-stat-val" id="modal-assists">0</div>
-                <div class="modal-stat-label">ASSISTS</div>
-            </div>
-            <div class="modal-stat">
-                <div class="modal-stat-val" style="color:var(--gold)" id="modal-rating">0.0</div>
-                <div class="modal-stat-label">AVG RTG</div>
-            </div>
+            <div class="modal-stat"><div class="modal-stat-val" id="modal-matches">0</div><div class="modal-stat-label">MATCHES</div></div>
+            <div class="modal-stat"><div class="modal-stat-val" style="color:var(--red)" id="modal-goals">0</div><div class="modal-stat-label">GOALS</div></div>
+            <div class="modal-stat"><div class="modal-stat-val" id="modal-assists">0</div><div class="modal-stat-label">ASSISTS</div></div>
+            <div class="modal-stat"><div class="modal-stat-val" style="color:var(--gold)" id="modal-rating">0.0</div><div class="modal-stat-label">AVG RTG</div></div>
         </div>
-
         <div class="modal-history">
             <h3>RECENT MATCH HISTORY</h3>
-            <div class="table-wrap">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th><th>Format</th><th>Goals</th><th>Assists</th><th class="red">Rtg</th>
-                            </tr>
-                        </thead>
-                        <tbody id="modal-history-body"></tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="table-wrap"><div class="table-responsive"><table>
+                <thead><tr><th>Date</th><th>Format</th><th>Goals</th><th>Assists</th><th class="red">Rtg</th></tr></thead>
+                <tbody id="modal-history-body"></tbody>
+            </table></div></div>
         </div>
     </div>
 </div>
 
-<!-- ─── TOAST ─── -->
 <div id="toast"></div>
 
 <script>
-    // ── STATE ──────────────────────────────────────────────────────────
     let isLoginMode   = true;
     let trendsChart   = null;
     let growthChart   = null;
+    let comparisonChart = null;
 
-    // ── MOBILE NAV TOGGLE ──────────────────────────────────────────────
     function toggleMobileNav() {
         const nav = document.getElementById('nav-links-container');
         const btn = document.getElementById('hamburger-btn');
@@ -1901,7 +829,6 @@
         btn.textContent = nav.classList.contains('open') ? '✕' : '☰';
     }
 
-    // Close nav when a button is clicked on mobile
     document.getElementById('nav-links-container').addEventListener('click', (e) => {
         if (e.target.classList.contains('nav-btn')) {
             document.getElementById('nav-links-container').classList.remove('open');
@@ -1909,7 +836,6 @@
         }
     });
 
-    // ── LOG MATCH — LIVE UPDATES ───────────────────────────────────────
     function updateMultiplierBadge() {
         const type = document.getElementById('match_type').value;
         const badge = document.getElementById('multiplier-badge');
@@ -1940,20 +866,16 @@
         if (el) el.textContent = `${exp.toFixed(1)} / 10`;
     }
 
-    // ── NOTIFICATIONS ──────────────────────────────────────────────────
     function toggleNotifications() {
         const dd = document.getElementById('notif-dropdown');
         dd.classList.toggle('open');
         if (dd.classList.contains('open')) loadNotifications();
     }
 
-    // Close notifications on outside click
     document.addEventListener('click', (e) => {
         const bell = document.getElementById('notif-bell-btn');
         const dd   = document.getElementById('notif-dropdown');
-        if (bell && dd && !bell.contains(e.target) && !dd.contains(e.target)) {
-            dd.classList.remove('open');
-        }
+        if (bell && dd && !bell.contains(e.target) && !dd.contains(e.target)) { dd.classList.remove('open'); }
     });
 
     async function loadNotifications() {
@@ -1965,25 +887,13 @@
         const list   = document.getElementById('notif-list');
         const badge  = document.getElementById('notif-badge');
         const unread = notifs.filter(n => !n.is_read).length;
-
-        if (unread > 0) {
-            badge.style.display = 'flex';
-            badge.textContent   = unread > 9 ? '9+' : unread;
-        } else {
-            badge.style.display = 'none';
-        }
-
-        if (!notifs.length) {
-            list.innerHTML = `<div class="notif-empty">No notifications yet.</div>`;
-            return;
-        }
-
+        if (unread > 0) { badge.style.display = 'flex'; badge.textContent = unread > 9 ? '9+' : unread; }
+        else { badge.style.display = 'none'; }
+        if (!notifs.length) { list.innerHTML = `<div class="notif-empty">No notifications yet.</div>`; return; }
         list.innerHTML = notifs.map(n => `
             <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="markRead(${n.notif_id})">
-                <div>${n.message}</div>
-                <div class="notif-time">${n.created_at || ''}</div>
-            </div>
-        `).join('');
+                <div>${n.message}</div><div class="notif-time">${n.created_at || ''}</div>
+            </div>`).join('');
     }
 
     async function markRead(notifId) {
@@ -1999,12 +909,8 @@
         showToast('All notifications marked as read', 'info');
     }
 
-    // Poll notifications every 30 seconds
-    setInterval(() => {
-        if (localStorage.getItem('rpcf_user_id')) loadNotifications();
-    }, 30000);
+    setInterval(() => { if (localStorage.getItem('rpcf_user_id')) loadNotifications(); }, 30000);
 
-    // ── TOAST ──────────────────────────────────────────────────────────
     function showToast(msg, type = 'success') {
         const t = document.getElementById('toast');
         t.textContent = msg;
@@ -2012,7 +918,6 @@
         setTimeout(() => { t.className = ''; }, 3500);
     }
 
-    // ── AUTH ───────────────────────────────────────────────────────────
     function toggleAuthMode() {
         isLoginMode = !isLoginMode;
         document.getElementById('auth-title').textContent   = isLoginMode ? 'PLAYER LOGIN' : 'JOIN THE SQUAD';
@@ -2024,12 +929,10 @@
         const name     = document.getElementById('auth-name').value.trim();
         const password = document.getElementById('auth-pass').value;
         if (!name || !password) { showToast('Fill in all fields', 'error'); return; }
-
         const endpoint = isLoginMode ? '/api/login' : '/api/register';
         try {
             const res    = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, password }) });
             const result = await res.json();
-
             if (result.status === 'success') {
                 if (isLoginMode) {
                     localStorage.setItem('rpcf_token',   result.token);
@@ -2042,20 +945,16 @@
         } catch (e) { showToast('Connection error. Try again.', 'error'); }
     }
 
-    // Allow Enter key on auth
     document.getElementById('auth-pass').addEventListener('keydown', e => { if (e.key === 'Enter') handleAuth(); });
     document.getElementById('auth-name').addEventListener('keydown', e => { if (e.key === 'Enter') handleAuth(); });
 
     function logout() { localStorage.clear(); window.location.reload(); }
 
-    // ── INIT APP ───────────────────────────────────────────────────────
     function initializeApp() {
         const role = localStorage.getItem('rpcf_role');
         if (!role) return;
-
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('main-app').style.display     = 'block';
-
         if (role === 'Manager') {
             document.querySelectorAll('.player-only').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.manager-only').forEach(el => el.style.display = 'inline-block');
@@ -2075,25 +974,27 @@
         loadGlobalTeamCenter();
     }
 
-    // ── PAGE SWITCH ────────────────────────────────────────────────────
     function switchPage(pageId, btn) {
         document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         if (btn) btn.classList.add('active');
-
         if (pageId === 'dashboard')    { loadDashboardSummary(); renderPlayerCharts(); }
         if (pageId === 'profile-page') loadProfile();
         if (pageId === 'history-page') loadMatchHistory();
+        if (pageId === 'career-page')  loadCareer();
         if (pageId === 'rankings')     loadRankingsAndAwards();
         if (pageId === 'team-center')  loadGlobalTeamCenter();
+        if (pageId === 'season-history') loadSeasonHistory();
+        if (pageId === 'hall-of-fame') loadHallOfFame();
+        if (pageId === 'matches-page') loadMatches();
         if (pageId === 'manager-panel') { loadPendingStats(); loadManagerSummary(); }
         if (pageId === 'squad-roster')    loadSquadRoster();
+        if (pageId === 'season-admin')    loadSeasonAdmin();
         if (pageId === 'reset-requests')  loadPasswordResets();
         if (pageId === 'admin-panel')     loadAdminPanel();
     }
 
-    // ── IMAGE UPLOADER ─────────────────────────────────────────────────
     function setupImageUploader() {
         document.getElementById('profile-pic-input').addEventListener('change', function (e) {
             const file = e.target.files[0];
@@ -2105,7 +1006,6 @@
         });
     }
 
-    // ── PROFILE ────────────────────────────────────────────────────────
     async function loadProfile() {
         const userId = localStorage.getItem('rpcf_user_id');
         const res    = await fetch(`/api/profile/${userId}`);
@@ -2143,7 +1043,6 @@
         else         showToast('Error: ' + (result.detail || result.message), 'error');
     }
 
-    // ── DASHBOARD ──────────────────────────────────────────────────────
     async function loadDashboardSummary() {
         const userId = localStorage.getItem('rpcf_user_id');
         const res    = await fetch(`/api/dashboard/${userId}`);
@@ -2158,40 +1057,28 @@
         const userId = localStorage.getItem('rpcf_user_id');
         const res    = await fetch(`/api/chart_data/${userId}`);
         const data   = await res.json();
-
         const labels  = data.labels.length  ? data.labels  : ['No Data'];
         const goals   = data.goals.length   ? data.goals   : [0];
         const assists = data.assists.length  ? data.assists : [0];
         const ratings = data.ratings.length ? data.ratings : [0];
-
         const cfg = { responsive: true, plugins: { legend: { labels: { color: '#e8f0fe', font: { family: 'Rajdhani' } } } }, scales: { x: { grid: { color: '#1a2d45' }, ticks: { color: '#5a7a99' } }, y: { grid: { color: '#1a2d45' }, ticks: { color: '#5a7a99' } } } };
-
         if (trendsChart) trendsChart.destroy();
         if (growthChart) growthChart.destroy();
-
         trendsChart = new Chart(document.getElementById('trendsChart').getContext('2d'), {
             type: 'line',
-            data: {
-                labels,
-                datasets: [
-                    { label: 'Goals',   data: goals,   borderColor: '#ff3b5c', backgroundColor: 'rgba(255,59,92,0.08)', tension: 0.4, borderWidth: 2, fill: true },
-                    { label: 'Assists', data: assists, borderColor: '#f5c518', backgroundColor: 'rgba(245,197,24,0.06)', tension: 0.4, borderWidth: 2, fill: true }
-                ]
-            },
+            data: { labels, datasets: [
+                { label: 'Goals',   data: goals,   borderColor: '#ff3b5c', backgroundColor: 'rgba(255,59,92,0.08)', tension: 0.4, borderWidth: 2, fill: true },
+                { label: 'Assists', data: assists, borderColor: '#f5c518', backgroundColor: 'rgba(245,197,24,0.06)', tension: 0.4, borderWidth: 2, fill: true }
+            ]},
             options: cfg
         });
-
         growthChart = new Chart(document.getElementById('growthChart').getContext('2d'), {
             type: 'bar',
-            data: {
-                labels,
-                datasets: [{ label: 'Manager Rating (/10)', data: ratings, backgroundColor: 'rgba(255,59,92,0.7)', borderRadius: 6, borderSkipped: false }]
-            },
+            data: { labels, datasets: [{ label: 'Manager Rating (/10)', data: ratings, backgroundColor: 'rgba(255,59,92,0.7)', borderRadius: 6, borderSkipped: false }] },
             options: { ...cfg, scales: { ...cfg.scales, y: { ...cfg.scales.y, min: 0, max: 10 } } }
         });
     }
 
-    // ── MATCH HISTORY ──────────────────────────────────────────────────
     async function loadMatchHistory() {
         const userId = localStorage.getItem('rpcf_user_id');
         const res    = await fetch(`/api/match_history/${userId}`);
@@ -2199,72 +1086,52 @@
         const history = await res.json();
         const tbody   = document.getElementById('history-body');
         tbody.innerHTML = '';
-
-        if (!history.length) {
-            tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted); padding:24px;">No rated appearances yet — log your first match!</td></tr>`;
-            return;
-        }
-
+        if (!history.length) { tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted); padding:24px;">No rated appearances yet — log your first match!</td></tr>`; return; }
         history.forEach(m => {
             tbody.innerHTML += `<tr>
                 <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.85rem;">${m.date_logged}</td>
                 <td><span class="match-pill ${m.match_type}">${m.match_type}</span></td>
-                <td style="font-weight:700;">${m.goals}</td>
-                <td>${m.assists}</td>
+                <td style="font-weight:700;">${m.goals}</td><td>${m.assists}</td>
                 <td style="color:var(--red); font-family:'Orbitron',sans-serif; font-weight:700;">${m.manager_rating.toFixed(1)}</td>
             </tr>`;
         });
     }
 
-    // ── RANKINGS ───────────────────────────────────────────────────────
     async function loadRankingsAndAwards() {
         const res      = await fetch('/api/rankings');
         const rankings = await res.json();
         const tbody    = document.getElementById('rankings-body');
         tbody.innerHTML = '';
-
         let topScorer   = { name: 'N/A', val: 0 };
         let topAssister = { name: 'N/A', val: 0 };
         let bestRated   = { name: 'N/A', val: 0 };
         let highImproved = { name: 'N/A', delta: -1 };
-
         const medals = ['gold', 'silver', 'bronze'];
         const medalEmoji = ['🥇', '🥈', '🥉'];
-
         rankings.forEach((p, i) => {
             const pts    = p.overall_points ? parseFloat(p.overall_points).toFixed(1) : '0.0';
             const avgRtg = p.avg_rating ? parseFloat(p.avg_rating) : 0;
             const medal  = i < 3 ? `<span class="rank-medal ${medals[i]}" style="font-size:1.1rem;">${medalEmoji[i]}</span>` : `<span style="color:var(--muted)">#${i+1}</span>`;
             const pic    = p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
-
             tbody.innerHTML += `<tr>
                 <td>${medal}</td>
-                <td>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${pic}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'"
-                            style="width:32px; height:32px; border-radius:50%; border:1.5px solid var(--gold); object-fit:cover; flex-shrink:0;">
-                        <span style="font-family:'Orbitron',sans-serif; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">${p.name}</span>
-                    </div>
-                </td>
+                <td><div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${pic}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'" style="width:32px; height:32px; border-radius:50%; border:1.5px solid var(--gold); object-fit:cover; flex-shrink:0;">
+                    <span style="font-family:'Orbitron',sans-serif; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">${p.name}</span>
+                </div></td>
                 <td style="font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--muted);">${p.position || '—'}</td>
                 <td>${p.total_matches || 0}</td>
                 <td style="color:var(--red); font-weight:700;">${p.total_goals || 0}</td>
                 <td>${p.total_assists || 0}</td>
                 <td style="color:var(--gold); font-family:'Orbitron',sans-serif; font-weight:700;">${pts}</td>
             </tr>`;
-
             if ((p.total_goals   || 0) > topScorer.val)   topScorer   = { name: p.name, val: p.total_goals };
             if ((p.total_assists || 0) > topAssister.val)  topAssister = { name: p.name, val: p.total_assists };
             if (avgRtg > bestRated.val)                    bestRated   = { name: p.name, val: avgRtg };
-
             const delta = p.total_matches > 0 ? parseFloat(pts) / p.total_matches : 0;
             if (delta > highImproved.delta && p.total_matches > 0) highImproved = { name: p.name, delta };
         });
-
-        if (!rankings.length) {
-            tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted); padding:24px; font-family:'Share Tech Mono',monospace; text-align:center;">No squad data yet.</td></tr>`;
-        }
-
+        if (!rankings.length) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted); padding:24px; font-family:'Share Tech Mono',monospace; text-align:center;">No squad data yet.</td></tr>`; }
         document.getElementById('award-scorer').textContent     = topScorer.name;
         document.getElementById('award-scorer-val').textContent = `${topScorer.val} Goals`;
         document.getElementById('award-assister').textContent   = topAssister.name;
@@ -2273,68 +1140,78 @@
         document.getElementById('award-rated-val').textContent  = `${bestRated.val.toFixed(1)} Avg Rating`;
         document.getElementById('award-improved').textContent   = highImproved.name;
         document.getElementById('award-improved-val').textContent = 'Trending Up 📈';
-
         const mvpEl = document.getElementById('team-mvp-card');
         if (mvpEl && rankings.length) mvpEl.textContent = rankings[0].name || '—';
     }
 
-    // ── TEAM CENTER ────────────────────────────────────────────────────
     async function loadGlobalTeamCenter() {
         const res  = await fetch('/api/team_stats');
         const data = await res.json();
         document.getElementById('team-goals-card').textContent  = data.team_goals;
         document.getElementById('team-assists-card').textContent = data.team_assists;
         document.getElementById('team-rating-card').textContent = data.team_avg_rating;
+        // comparison chart
+        try {
+            const comp = await (await fetch('/api/team_comparison')).json();
+            if (comp.length) {
+                const labels = comp.map(c => c.season_name);
+                const cfg = { responsive: true, plugins: { legend: { labels: { color: '#e8f0fe' } } }, scales: { x: { grid: { color: '#1a2d45' }, ticks: { color: '#5a7a99' } }, y: { grid: { color: '#1a2d45' }, ticks: { color: '#5a7a99' } } } };
+                if (comparisonChart) comparisonChart.destroy();
+                comparisonChart = new Chart(document.getElementById('comparisonChart').getContext('2d'), {
+                    type: 'bar',
+                    data: { labels, datasets: [
+                        { label: 'Goals', data: comp.map(c => c.goals), backgroundColor: 'rgba(255,59,92,0.7)', borderRadius: 6 },
+                        { label: 'Assists', data: comp.map(c => c.assists), backgroundColor: 'rgba(245,197,24,0.7)', borderRadius: 6 },
+                        { label: 'Clean Sheets', data: comp.map(c => c.clean_sheets), backgroundColor: 'rgba(0,212,255,0.7)', borderRadius: 6 }
+                    ]},
+                    options: cfg
+                });
+            }
+        } catch(e) {}
     }
 
-    // ── LOG STATS ──────────────────────────────────────────────────────
     async function submitStats() {
         const goals       = parseInt(document.getElementById('goals').value) || 0;
         const assists     = parseInt(document.getElementById('assists').value) || 0;
         const selfRating  = parseFloat(document.getElementById('player_rating').value) || 6;
         const matchType   = document.getElementById('match_type').value;
+        const cleanSheet  = parseInt(document.getElementById('clean_sheet').value) || 0;
+        const isMotm      = parseInt(document.getElementById('is_motm').value) || 0;
         const token       = localStorage.getItem('rpcf_token');
-
         if (goals < 0 || assists < 0) { showToast('Goals and assists cannot be negative', 'error'); return; }
-
-        const res    = await fetch('/api/submit_stats', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, match_type: matchType, goals, assists }) });
+        const res    = await fetch('/api/submit_stats', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, match_type: matchType, goals, assists, clean_sheet: cleanSheet, is_motm: isMotm }) });
         const result = await res.json();
-
         if (res.ok) {
             showToast('Stats submitted! Awaiting manager rating 🔥', 'success');
             triggerAICoach(goals, assists, selfRating);
             document.getElementById('goals').value   = 0;
             document.getElementById('assists').value = 0;
             document.getElementById('player_rating').value = 6;
+            document.getElementById('clean_sheet').value = 0;
+            document.getElementById('is_motm').value = 0;
             updateRatingDisplay();
             updateAIPreview();
         } else { showToast('Error: ' + (result.detail || result.message), 'error'); }
     }
 
-    // ── AI COACH ───────────────────────────────────────────────────────
     function triggerAICoach(goals, assists, selfRating) {
         const panel   = document.getElementById('ai-coach-panel');
         const textEl  = document.getElementById('ai-coach-response');
         const predEl  = document.getElementById('ai-predict-response');
         panel.style.display = 'block';
-
         let exp = 5.0 + (goals * 1.2) + (assists * 0.8);
         if (selfRating > 8) exp += 0.5;
         if (goals === 0 && assists === 0) exp = Math.max(4.0, selfRating - 1.0);
         if (exp > 10) exp = 10;
-
         predEl.textContent = `Expected Manager Rating: ${exp.toFixed(1)} / 10`;
-
         let advice = '';
         if      (goals >= 2)             advice = `Superb attacking display. ${goals} goals shows high operational efficiency inside the final third. Focus on spatial compression when out of possession to push your rating index above 8.5.`;
         else if (goals === 1 || assists >= 1) advice = `Solid contribution today (${goals}G / ${assists}A). Increase progressive passing velocity in transitions to optimize your tracking index further.`;
         else if (selfRating >= 7)        advice = `High work-rate documented despite blank box-score. Your self-assessment of ${selfRating} signals strong positioning — work on half-turn receiving angles to trigger more forward drives.`;
         else                             advice = `Tactical realignment advised. Focus on defensive containment, minimizing risk vectors, and low-touch distribution in your next outing.`;
-
         textEl.textContent = `"${advice}"`;
     }
 
-    // ── MANAGER SUMMARY ────────────────────────────────────────────────
     async function loadManagerSummary() {
         try {
             const res  = await fetch('/api/manager_summary');
@@ -2348,31 +1225,22 @@
         } catch(e) { console.log('Summary load error:', e); }
     }
 
-    // ── MANAGER: PENDING STATS ─────────────────────────────────────────
     async function loadPendingStats() {
         const res   = await fetch('/api/pending_stats');
         const stats = await res.json();
         const tbody = document.getElementById('manager-body');
         tbody.innerHTML = '';
-
-        if (!stats.length) {
-            tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted); padding:24px;">No pending submissions to review. ✅</td></tr>`;
-            return;
-        }
-
+        if (!stats.length) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted); padding:24px;">No pending submissions to review. ✅</td></tr>`; return; }
         stats.forEach(s => {
             tbody.innerHTML += `<tr>
                 <td style="font-family:'Orbitron',sans-serif; color:var(--gold); font-weight:700; font-size:0.85rem; text-transform:uppercase;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <img src="${s.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png'}"
-                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'"
-                            style="width:28px; height:28px; border-radius:50%; border:1px solid var(--gold); object-fit:cover; flex-shrink:0;">
+                        <img src="${s.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png'}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'" style="width:28px; height:28px; border-radius:50%; border:1px solid var(--gold); object-fit:cover; flex-shrink:0;">
                         ${s.name}
                     </div>
                 </td>
                 <td><span class="match-pill ${s.match_type}">${s.match_type}</span></td>
-                <td style="font-weight:700;">${s.goals}</td>
-                <td>${s.assists}</td>
+                <td style="font-weight:700;">${s.goals}</td><td>${s.assists}</td>
                 <td style="font-family:'Share Tech Mono',monospace; color:var(--muted); font-size:0.8rem;">${s.date_logged || '—'}</td>
                 <td><input class="rating-input" type="number" id="rating-${s.stat_id}" min="0" max="10" step="0.1" value="8.0"></td>
                 <td style="display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap;">
@@ -2381,22 +1249,13 @@
                 </td>
             </tr>`;
         });
-
-        // Update pending badge
         loadManagerSummary();
     }
 
     async function submitRating(statId) {
         const rating = parseFloat(document.getElementById(`rating-${statId}`).value);
         const token  = localStorage.getItem('rpcf_token');
-
-        // Frontend validation — cap at 10
-        if (isNaN(rating) || rating < 0 || rating > 10) {
-            showToast('Rating must be between 0.0 and 10.0', 'error');
-            document.getElementById(`rating-${statId}`).value = 8.0;
-            return;
-        }
-
+        if (isNaN(rating) || rating < 0 || rating > 10) { showToast('Rating must be between 0.0 and 10.0', 'error'); document.getElementById(`rating-${statId}`).value = 8.0; return; }
         const res    = await fetch('/api/rate_player', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stat_id: statId, rating, token }) });
         const result = await res.json();
         if (res.ok) { showToast(`${result.message} · ${result.points_awarded} pts awarded`, 'success'); loadPendingStats(); loadRankingsAndAwards(); loadGlobalTeamCenter(); }
@@ -2406,37 +1265,22 @@
     async function rejectSubmission(statId) {
         if (!confirm('Are you sure you want to reject this submission?')) return;
         const token = localStorage.getItem('rpcf_token');
-        const res   = await fetch('/api/rate_player', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ stat_id: statId, rating: 0, token, action: 'reject' })
-        });
+        const res   = await fetch('/api/rate_player', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stat_id: statId, rating: 0, token, action: 'reject' }) });
         const result = await res.json();
         if (res.ok) { showToast('Submission rejected ❌', 'error'); loadPendingStats(); loadManagerSummary(); }
         else         showToast('Error: ' + result.detail, 'error');
     }
 
-    // ── MANAGER: SQUAD ROSTER ──────────────────────────────────────────
     async function loadSquadRoster() {
         const res     = await fetch('/api/rankings');
         const players = await res.json();
         const grid    = document.getElementById('roster-grid');
         grid.innerHTML = '';
-
-        if (!players.length) {
-            grid.innerHTML = `<p style="color:var(--muted); font-family:'Share Tech Mono',monospace;">No players registered yet.</p>`;
-            return;
-        }
-
+        if (!players.length) { grid.innerHTML = `<p style="color:var(--muted); font-family:'Share Tech Mono',monospace;">No players registered yet.</p>`; return; }
         for (const p of players) {
-            // Fetch full profile for avatar + bio
-            const profRes  = await fetch(`/api/profile/${p.user_id || ''}`);
-
             grid.innerHTML += `
             <div class="roster-card" onclick="openPlayerModal(${p.user_id})">
-                <div class="roster-avatar">
-                    <img src="${p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png'}" alt="${p.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'">
-                </div>
+                <div class="roster-avatar"><img src="${p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png'}" alt="${p.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'"></div>
                 <div class="roster-info">
                     <div class="roster-name">${p.name}</div>
                     <div class="roster-position">${p.position || 'UNASSIGNED'}</div>
@@ -2450,8 +1294,6 @@
     async function openPlayerModal(userId) {
         if (!userId) return;
         document.getElementById('player-modal').classList.add('active');
-
-        // Load profile
         const profRes = await fetch(`/api/profile/${userId}`);
         if (profRes.ok) {
             const p = await profRes.json();
@@ -2462,8 +1304,6 @@
             document.getElementById('modal-foot').textContent     = `Foot: ${p.preferred_foot ? p.preferred_foot.charAt(0) : '-'}`;
             document.getElementById('modal-bio').textContent      = `"${p.bio}"`;
         }
-
-        // Load dashboard stats
         const dashRes = await fetch(`/api/dashboard/${userId}`);
         if (dashRes.ok) {
             const d = await dashRes.json();
@@ -2472,16 +1312,13 @@
             document.getElementById('modal-assists').textContent = d.assists;
             document.getElementById('modal-rating').textContent  = d.avg_rating;
         }
-
-        // Load match history
         const histRes = await fetch(`/api/match_history/${userId}`);
         const histBody = document.getElementById('modal-history-body');
         histBody.innerHTML = '';
         if (histRes.ok) {
             const hist = await histRes.json();
-            if (!hist.length) {
-                histBody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>`;
-            } else {
+            if (!hist.length) { histBody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>`; }
+            else {
                 hist.slice(0, 5).forEach(m => {
                     histBody.innerHTML += `<tr>
                         <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.8rem;">${m.date_logged}</td>
@@ -2494,19 +1331,10 @@
         }
     }
 
-    function closeModal() {
-        document.getElementById('player-modal').classList.remove('active');
-    }
+    function closeModal() { document.getElementById('player-modal').classList.remove('active'); }
+    document.getElementById('player-modal').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
 
-    // Close modal on overlay click
-    document.getElementById('player-modal').addEventListener('click', function (e) {
-        if (e.target === this) closeModal();
-    });
-
-    // ── FORGOT PASSWORD ────────────────────────────────────────────────
-    function showForgotPassword() {
-        document.getElementById('forgot-modal').classList.add('active');
-    }
+    function showForgotPassword() { document.getElementById('forgot-modal').classList.add('active'); }
     function closeForgotModal() {
         document.getElementById('forgot-modal').classList.remove('active');
         document.getElementById('reset-name').value = '';
@@ -2523,83 +1351,39 @@
         try {
             const res    = await fetch('/api/request_password_reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, new_password: newpass }) });
             const result = await res.json();
-            if (res.ok && result.status === 'success') {
-                showToast(result.message, 'success');
-                closeForgotModal();
-            } else { showToast(result.detail || result.message, 'error'); }
+            if (res.ok && result.status === 'success') { showToast(result.message, 'success'); closeForgotModal(); }
+            else { showToast(result.detail || result.message, 'error'); }
         } catch(e) { showToast('Connection error. Try again.', 'error'); }
     }
 
-    // ── PUBLIC PLAYER PROFILE VIEWER (Players viewing others) ─────────
-    async function viewPlayerPublicProfile(userId) {
-        if (!userId) return;
-        const res = await fetch(`/api/player_public/${userId}`);
-        if (!res.ok) { showToast('Could not load player profile', 'error'); return; }
-        const p = await res.json();
-        document.getElementById('player-modal').classList.add('active');
-        document.getElementById('modal-avatar').src    = p.profile_pic || 'https://cdn-icons-png.flaticon.com/512/166/166258.png';
-        document.getElementById('modal-name').textContent     = p.name;
-        document.getElementById('modal-position').textContent = p.position || 'N/A';
-        document.getElementById('modal-age').textContent      = `Age: ${p.age || '--'}`;
-        document.getElementById('modal-foot').textContent     = `Foot: ${p.preferred_foot ? p.preferred_foot.charAt(0) : '-'}`;
-        document.getElementById('modal-bio').textContent      = `"${p.bio}"`;
-        document.getElementById('modal-matches').textContent  = p.total_matches || 0;
-        document.getElementById('modal-goals').textContent    = p.total_goals || 0;
-        document.getElementById('modal-assists').textContent  = p.total_assists || 0;
-        document.getElementById('modal-rating').textContent   = p.avg_rating || '0.0';
-        const histBody = document.getElementById('modal-history-body');
-        histBody.innerHTML = '';
-        if (!p.history || !p.history.length) {
-            histBody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);padding:16px;">No rated history yet.</td></tr>`;
-        } else {
-            p.history.forEach(m => {
-                histBody.innerHTML += `<tr>
-                    <td style="font-family:'Share Tech Mono',monospace; color:var(--gold); font-size:0.8rem;">${m.date_logged}</td>
-                    <td><span class="match-pill ${m.match_type}">${m.match_type}</span></td>
-                    <td>${m.goals}</td><td>${m.assists}</td>
-                    <td style="color:var(--red); font-weight:700;">${m.manager_rating.toFixed(1)}</td>
-                </tr>`;
-            });
-        }
-    }
-
-    // ── PASSWORD RESETS (Manager) ─────────────────────────────────────
     async function loadPasswordResets() {
         const resets = await (await fetch('/api/pending_resets')).json();
         const tbody  = document.getElementById('reset-body');
         tbody.innerHTML = '';
-        if (!resets.length) {
-            tbody.innerHTML = `<tr><td colspan="3" style="color:var(--muted);padding:24px;font-family:'Share Tech Mono',monospace;">No pending reset requests.</td></tr>`;
-            return;
-        }
+        if (!resets.length) { tbody.innerHTML = `<tr><td colspan="3" style="color:var(--muted);padding:24px;font-family:'Share Tech Mono',monospace;">No pending reset requests.</td></tr>`; return; }
         resets.forEach(r => {
             tbody.innerHTML += `<tr>
-                <td>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <img src="${r.profile_pic||'https://cdn-icons-png.flaticon.com/512/166/166258.png'}"
-                            style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);object-fit:cover;"
-                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'" />
-                        <span style="font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;">${r.name}</span>
-                    </div>
-                </td>
+                <td><div style="display:flex;align-items:center;gap:10px;">
+                    <img src="${r.profile_pic||'https://cdn-icons-png.flaticon.com/512/166/166258.png'}" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);object-fit:cover;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'" />
+                    <span style="font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;">${r.name}</span>
+                </div></td>
                 <td style="font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:0.8rem;">${r.requested_at}</td>
                 <td style="display:flex;gap:8px;justify-content:center;">
-                    <button onclick="handleReset(${r.request_id},'approve')" class="submit-btn gold-btn" style="margin-top:0;padding:7px 14px;width:auto;font-size:0.75rem;">✅ Approve</button>
-                    <button onclick="handleReset(${r.request_id},'reject')" class="reject-btn">❌ Reject</button>
+                    <button onclick="handleReset(${r.reset_id},'approve')" class="submit-btn gold-btn" style="margin-top:0;padding:7px 14px;width:auto;font-size:0.75rem;">✅ Approve</button>
+                    <button onclick="handleReset(${r.reset_id},'reject')" class="reject-btn">❌ Reject</button>
                 </td>
             </tr>`;
         });
     }
 
-    async function handleReset(requestId, action) {
+    async function handleReset(resetId, action) {
         const token = localStorage.getItem('rpcf_token');
-        const res   = await fetch('/api/handle_reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ request_id: requestId, action, token }) });
+        const res   = await fetch('/api/handle_reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reset_id: resetId, action, token }) });
         const result = await res.json();
         if (res.ok) { showToast(result.message, action === 'approve' ? 'success' : 'error'); loadPasswordResets(); }
         else showToast('Error: ' + result.detail, 'error');
     }
 
-    // ── ADMIN PANEL ────────────────────────────────────────────────────
     async function loadAdminPanel() {
         const users = await (await fetch('/api/admin/users')).json();
         const tbody = document.getElementById('admin-body');
@@ -2607,14 +1391,10 @@
         users.forEach(u => {
             const isBanned = u.is_banned;
             tbody.innerHTML += `<tr style="opacity:${isBanned?'0.5':'1'}">
-                <td>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <img src="${u.profile_pic||'https://cdn-icons-png.flaticon.com/512/166/166258.png'}"
-                            style="width:30px;height:30px;border-radius:50%;border:1px solid var(--border);object-fit:cover;"
-                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'">
-                        <span style="font-family:'Orbitron',sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;">${u.name}</span>
-                    </div>
-                </td>
+                <td><div style="display:flex;align-items:center;gap:10px;">
+                    <img src="${u.profile_pic||'https://cdn-icons-png.flaticon.com/512/166/166258.png'}" style="width:30px;height:30px;border-radius:50%;border:1px solid var(--border);object-fit:cover;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/166/166258.png'">
+                    <span style="font-family:'Orbitron',sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;">${u.name}</span>
+                </div></td>
                 <td style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:${u.role==='Manager'?'var(--gold)':'var(--muted)'}">${u.role}</td>
                 <td style="font-size:0.85rem;">${u.position||'—'}</td>
                 <td style="font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--red);">${u.jersey_number?'#'+u.jersey_number:'—'}</td>
@@ -2631,7 +1411,6 @@
         });
     }
 
-    // Edit user inline — opens a prompt-based quick edit
     function openEditModal(user) {
         const newName     = prompt(`Edit name (current: ${user.name}):`, user.name);
         if (newName === null) return;
@@ -2681,7 +1460,134 @@
         else showToast('Error: ' + result.detail, 'error');
     }
 
-    // ── BOOT ───────────────────────────────────────────────────────────
+    // ── SEASON HISTORY ──
+    async function loadSeasonHistory() {
+        const seasons = await (await fetch('/api/season_history')).json();
+        const grid = document.getElementById('season-history-grid');
+        if (!seasons.length) { grid.innerHTML = `<p style="color:var(--muted);font-family:'Share Tech Mono',monospace;grid-column:1/-1;text-align:center;padding:24px;">No archived seasons yet. Managers can archive from the Season Mgmt tab.</p>`; return; }
+        grid.innerHTML = seasons.map(s => `
+            <div class="award-card" onclick="viewSeasonDetail(${s.season_id})" style="cursor:pointer;">
+                <div class="award-icon">📅</div>
+                <div class="award-name" style="color:var(--gold);font-size:1.3rem;">${s.season_name}</div>
+                <div style="margin:12px 0;text-align:left;font-size:0.85rem;line-height:1.9;">
+                    <div>🏆 Champion: <b style="color:var(--gold)">${s.champion}</b></div>
+                    <div>⚽ Top Scorer: <b>${s.top_scorer}</b> (${s.top_scorer_val})</div>
+                    <div>🎯 Top Assists: <b>${s.top_assister}</b> (${s.top_assister_val})</div>
+                    <div>⭐ Best Rating: <b>${s.best_rating}</b></div>
+                    <div>🥅 Matches: <b>${s.matches}</b> · 👥 Players: <b>${s.players}</b></div>
+                </div>
+            </div>`).join('');
+    }
+
+    async function viewSeasonDetail(sid) {
+        const d = await (await fetch(`/api/season/${sid}`)).json();
+        let awards = d.awards.map(a => `${a.award_type}: ${a.player_name} (${a.value})`).join('\n');
+        alert(`${d.season.season_name} Awards:\n\n${awards || 'No awards recorded.'}`);
+    }
+
+    // ── HALL OF FAME ──
+    async function loadHallOfFame() {
+        const hof = await (await fetch('/api/hall_of_fame')).json();
+        const grid = document.getElementById('hof-grid');
+        const cats = [
+            ['top_goals','⚽ Top Goals'], ['top_assists','🎯 Top Assists'],
+            ['most_clean_sheets','🥅 Most Clean Sheets'], ['most_motm','⭐ Most MOTM']
+        ];
+        grid.innerHTML = cats.map(([key,title]) => `
+            <div class="chart-box">
+                <h3 class="gold">${title}</h3>
+                ${(hof[key]||[]).length ? (hof[key].map((r,i)=>`
+                    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+                        <span><b class="rank-medal ${['gold','silver','bronze'][i]||''}">${i+1}</b> ${r.name}</span>
+                        <b style="color:var(--gold)">${r.total}</b>
+                    </div>`).join('')) : '<p style="color:var(--muted);padding:12px;">No data yet.</p>'}
+            </div>`).join('');
+    }
+
+    // ── MATCHES ──
+    async function loadMatches() {
+        const matches = await (await fetch('/api/matches')).json();
+        const list = document.getElementById('match-list');
+        if (!matches.length) { list.innerHTML = `<p style="color:var(--muted);text-align:center;padding:24px;font-family:'Share Tech Mono',monospace;">No matches recorded yet.</p>`; return; }
+        list.innerHTML = matches.map(m => {
+            const color = m.result==='Win'?'var(--success)':m.result==='Loss'?'var(--red)':'var(--gold)';
+            return `<div class="form-box" style="max-width:none;margin-bottom:14px;padding:18px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <span style="font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:0.75rem;">${m.match_date} · ${m.season_name||''}</span>
+                    <span class="match-pill" style="background:${color}22;color:${color};">${m.result}</span>
+                </div>
+                <div style="text-align:center;font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:900;margin:10px 0;">
+                    RPCF <span style="color:var(--gold)">${m.our_score} - ${m.their_score}</span> ${m.opponent}
+                </div>
+                <div style="font-size:0.85rem;color:var(--muted);text-align:center;">
+                    ${m.scorers?`⚽ ${m.scorers}`:''} ${m.assisters?`· 🎯 ${m.assisters}`:''} ${m.motm?`· ⭐ MOTM: ${m.motm}`:''}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ── CAREER ──
+    async function loadCareer() {
+        const userId = localStorage.getItem('rpcf_user_id');
+        const d = await (await fetch(`/api/career/${userId}`)).json();
+        const el = document.getElementById('career-content');
+        const seasonRows = [...(d.seasons||[]), ...(d.current?[d.current]:[])];
+        el.innerHTML = `
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Career Matches</div><div class="stat-value">${d.career.matches}</div></div>
+                <div class="stat-card"><div class="stat-label">Career Goals</div><div class="stat-value red">${d.career.goals}</div></div>
+                <div class="stat-card"><div class="stat-label">Career Assists</div><div class="stat-value">${d.career.assists}</div></div>
+                <div class="stat-card gold"><div class="stat-label">Career MOTM</div><div class="stat-value gold">${d.career.motm}</div></div>
+            </div>
+            ${d.badges.length?`<div class="chart-box" style="margin-bottom:20px;"><h3 class="gold">🏅 Achievement Badges</h3>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;">${d.badges.map(b=>`<span class="meta-tag gold" style="font-size:0.85rem;padding:8px 14px;">${b.icon} ${b.badge_name}</span>`).join('')}</div></div>`:''}
+            ${d.awards.length?`<div class="chart-box" style="margin-bottom:20px;"><h3 class="gold">🏆 Career Awards</h3>
+                ${d.awards.map(a=>`<div style="padding:6px 0;">🥇 <b>${a.award_type}</b> — ${a.season_name} (${a.value})</div>`).join('')}</div>`:''}
+            <div class="table-wrap"><div class="table-responsive"><table>
+                <thead><tr><th class="gold">Season</th><th>Matches</th><th>Goals</th><th>Assists</th><th>MOTM</th><th class="red">Avg Rtg</th></tr></thead>
+                <tbody>${seasonRows.length?seasonRows.map(s=>`<tr>
+                    <td style="color:var(--gold);font-family:'Orbitron',sans-serif;font-size:0.8rem;">${s.season_name}</td>
+                    <td>${s.matches}</td><td style="color:var(--red);font-weight:700;">${s.goals}</td>
+                    <td>${s.assists}</td><td>${s.motm}</td>
+                    <td style="color:var(--red);font-weight:700;">${Number(s.avg_rating||0).toFixed(1)}</td>
+                </tr>`).join(''):`<tr><td colspan="6" style="color:var(--muted);padding:24px;">No career data yet.</td></tr>`}</tbody>
+            </table></div></div>`;
+    }
+
+    // ── SEASON ADMIN ──
+    async function loadSeasonAdmin() {
+        const s = await (await fetch('/api/current_season')).json();
+        document.getElementById('current-season-info').textContent = `Active: ${s.season_name}`;
+    }
+    async function archiveSeason() {
+        if (!confirm('Archive current season, generate awards, and start a new one? This cannot be undone.')) return;
+        const token = localStorage.getItem('rpcf_token');
+        const res = await fetch('/api/archive_season', {method:'POST',headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({token,
+                champion: document.getElementById('season-champion').value,
+                runner_up: document.getElementById('season-runnerup').value,
+                season_name: document.getElementById('season-newname').value})});
+        const r = await res.json();
+        if (res.ok) { showToast(r.message, 'success'); loadSeasonAdmin(); }
+        else showToast('Error: '+(r.detail||r.message), 'error');
+    }
+    async function recordMatch() {
+        const token = localStorage.getItem('rpcf_token');
+        const opp = document.getElementById('m-opponent').value.trim();
+        if (!opp) { showToast('Enter opponent name', 'error'); return; }
+        const res = await fetch('/api/matches/create', {method:'POST',headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({token,
+                opponent: opp,
+                our_score: parseInt(document.getElementById('m-ours').value)||0,
+                their_score: parseInt(document.getElementById('m-theirs').value)||0,
+                scorers: document.getElementById('m-scorers').value,
+                assisters: document.getElementById('m-assists').value,
+                motm: document.getElementById('m-motm').value})});
+        const r = await res.json();
+        if (res.ok) { showToast(r.message, 'success'); document.getElementById('m-opponent').value=''; document.getElementById('m-scorers').value=''; document.getElementById('m-assists').value=''; document.getElementById('m-motm').value=''; }
+        else showToast('Error: '+(r.detail||r.message), 'error');
+    }
+
     window.onload = () => { if (localStorage.getItem('rpcf_user_id')) initializeApp(); };
 </script>
 </body>
